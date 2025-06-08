@@ -203,21 +203,39 @@ window.searchPlayer = async function() {
         return;
 
     }
-    
 
 
 
+    try {
 
-    
-    const apiUrl = `https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`;
-    
-    const response = await fetch(apiUrl);
-    
-    const countryCodeNumeric = data.recent_player_info[0].country;
-    const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
+        const apiUrl = `https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`;
 
+        const response = await fetch(apiUrl);
+        console.log
+        console.log("API response status:", response);
 
 
+        if (!response.ok) {
+
+            const errorText = await response.text();
+            console.log("API error response:", errorText);
+            if (errorText.includes("player not found")) {
+                
+
+                if (playerInfoDiv) playerInfoDiv.innerHTML = "";
+
+                document.getElementById('name').innerHTML = `Player "${playerName}" not found.`;
+
+                return;
+
+            }
+
+            throw new Error(`Could not fetch resource: ${response.status} ${response.statusText} - ${errorText}`);
+
+        }
+        else {
+            document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
+        }
 
 
 
@@ -231,7 +249,7 @@ window.searchPlayer = async function() {
 
         const points = data.profile.points;
 
-        
+        const countryCodeNumeric = data.recent_player_info[0].country;
 
         const clan = data.profile.clan || 'N/A';
 
@@ -248,42 +266,28 @@ window.searchPlayer = async function() {
         const name = data.profile.name;
 
 
+
         const playtimeHours = Math.trunc(playtimeSeconds / 3600);
 
 
-    
-        
+
+        const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
 
         const regionNames = new Intl.DisplayNames(
 
         ['en'], {type: 'region'}
 
         );
-        
+
         const joindateFormatted = formatTimestamp(joindateRaw);
 
         const lastseenFormatted = formatTimestamp(lastseenRaw);
-        if (!response.ok) {
 
-            const errorText = await response.text();
-
-            if (errorText.includes("player not found")) {
-
-                if (playerInfoDiv) playerInfoDiv.innerHTML = "";
-
-                document.getElementById('name').innerHTML = `Player "${playerName}" not found.`;
-                document.getElementById('country').innerHTML = "";
-
-                return;
-
-            }
-            else {
-            document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
-        }
         document.getElementById('playtime').innerHTML = `${playtimeHours} Hours`;
 
         document.getElementById('joindate').innerHTML = joindateFormatted;
 
+        
 
         document.getElementById('clan').innerHTML = clan;
 
@@ -343,7 +347,37 @@ window.searchPlayer = async function() {
 
         playerNameInput.value = '';
 
+    } catch (error) {
 
+        console.error("Error in searchPlayer:", error);
+
+        if (playerInfoDiv) playerInfoDiv.innerHTML = `<p style="color: red;">An error occurred while fetching player data: ${error.message}. Please try again.</p>`;
+
+        document.getElementById('playtime').innerHTML = "";
+
+        document.getElementById('joindate').innerHTML = "";
+
+        document.getElementById('country').innerHTML = "";
+
+        document.getElementById('clan').innerHTML = "";
+
+        document.getElementById('points').innerHTML = "";
+
+        document.getElementById('lastseen').innerHTML = "";
+
+        document.getElementById('name').innerHTML = "";
+
+        if (typeof myTee !== 'undefined' && myTee !== null) {
+
+            myTee.api.functions.unbindContainer();
+
+            myTee = null;
+
+            document.querySelector('.teeassembler-tee').innerHTML = '';
+
+        }
+
+    }
 
 }
 
@@ -356,6 +390,5 @@ document.getElementById('playerSearch').addEventListener('keypress', function(ev
         window.searchPlayer();
 
     }
-}
-}));
-)
+
+});
