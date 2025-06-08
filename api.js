@@ -294,7 +294,7 @@ window.searchPlayer = async function() {
 
         console.log(data);
 
-        document.getElementById('CountryFlag').src = "https://github.com/ddnet/ddnet/blob/master/data/countryflags/" + countryName + ".png?raw=true";
+        document.getElementById('CountryFlag').src = "/TeeViewer/" + countryName + ".png";
 
         const effectiveBodyColor = skinbodyColor !== null ? skinbodyColor.toString() : '';
 
