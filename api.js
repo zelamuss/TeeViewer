@@ -211,16 +211,14 @@ window.searchPlayer = async function() {
         const apiUrl = `https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`;
 
         const response = await fetch(apiUrl);
-        console.log
-        console.log("API response status:", response);
+
 
 
         if (!response.ok) {
 
             const errorText = await response.text();
-            console.log("API error response:", errorText);
+
             if (errorText.includes("player not found")) {
-                
 
                 if (playerInfoDiv) playerInfoDiv.innerHTML = "";
 
@@ -232,9 +230,6 @@ window.searchPlayer = async function() {
 
             throw new Error(`Could not fetch resource: ${response.status} ${response.statusText} - ${errorText}`);
 
-        }
-        else {
-            document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
         }
 
 
@@ -287,7 +282,7 @@ window.searchPlayer = async function() {
 
         document.getElementById('joindate').innerHTML = joindateFormatted;
 
-        
+        document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
 
         document.getElementById('clan').innerHTML = clan;
 
@@ -299,7 +294,7 @@ window.searchPlayer = async function() {
 
         console.log(data);
 
-        document.getElementById('CountryFlag').src = "/TeeViewer/countryflags/" + countryName + ".png";
+        document.getElementById('CountryFlag').src = "/countryflags/" + countryName + ".png";
 
         const effectiveBodyColor = skinbodyColor !== null ? skinbodyColor.toString() : '';
 
