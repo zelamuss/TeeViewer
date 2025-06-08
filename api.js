@@ -357,5 +357,5 @@ document.getElementById('playerSearch').addEventListener('keypress', function(ev
 
     }
 }
-});
+}));
 )
