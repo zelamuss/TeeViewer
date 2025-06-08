@@ -207,19 +207,16 @@ window.searchPlayer = async function() {
 
 
 
-    try {
 
-        const apiUrl = `https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`;
+    
+    const apiUrl = `https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`;
+    
+    const response = await fetch(apiUrl);
+    
+    const countryCodeNumeric = data.recent_player_info[0].country;
+    const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
 
-        const response = await fetch(apiUrl);
 
-        const countryCodeNumeric = data.recent_player_info[0].country;
-        const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
-
-
-            throw new Error(`Could not fetch resource: ${response.status} ${response.statusText} - ${errorText}`);
-
-        }
 
 
 
