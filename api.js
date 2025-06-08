@@ -265,7 +265,6 @@ window.searchPlayer = async function() {
         const name = data.profile.name;
 
 
-        const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
         const playtimeHours = Math.trunc(playtimeSeconds / 3600);
 
 
