@@ -31,6 +31,7 @@
             font-size: 16px;
             min-width: 300px;
             transition: all 0.3s ease;
+            justify-content: center;
         }
 
         .search-input:focus {
@@ -232,11 +233,13 @@
 
             .maps-table {
                 font-size: 14px;
+                text-align: center
             }
 
             .maps-table th,
             .maps-table td {
                 padding: 10px;
+                text-align: center
             }
 
             .map-details-content {
@@ -289,7 +292,7 @@
                 <tr>
                     <th></th>
                     <th>Map Name</th>
-                    <th>Server</th>
+                    <th>Type</th>
                     <th>Points</th>
                     <th>Stars</th>
                     <th>Mapper</th>
@@ -491,10 +494,6 @@
                                 <span class="detail-label">Avg Players/Server:</span>
                                 <span class="detail-value">${avgPlayers}</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Created:</span>
-                                <span class="detail-value">${formatTimestamp(mapDetails.createdAt)}</span>
-                            </div>
                         </div>
                         
                         <div class="detail-section">
@@ -504,7 +503,7 @@
                                 <span class="detail-value">${mapDetails.name}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Most Popular:</span>
+                                <span class="detail-label">Has Server:</span>
                                 <span class="detail-value">${totalServers > 0 ? 'Yes' : 'No'}</span>
                             </div>
                             <div class="detail-item">
@@ -519,13 +518,13 @@
                             <h4>🖥️ Active Servers</h4>
                             ${totalServers > 0 ? `
                                 <div class="servers-list">
-                                    ${mapDetails.servers.slice(0, 5).map(server => `
+                                    ${mapDetails.servers.map(server => `
                                         <div class="server-item">
                                             <span class="server-name">${server.name}</span>
                                             <span class="server-players">${server.numPlayers}/${server.maxPlayers}</span>
                                         </div>
                                     `).join('')}
-                                    ${totalServers > 5 ? `<div style="text-align: center; margin-top: 10px; color: var(--primary-color); font-size: 12px;">+${totalServers - 5} more servers</div>` : ''}
+                                    
                                 </div>
                             ` : '<div style="text-align: center; color: rgba(255, 255, 255, 0.6); padding: 20px;">No active servers</div>'}
                         </div>
