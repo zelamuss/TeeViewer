@@ -232,6 +232,9 @@ window.searchPlayer = async function() {
             throw new Error(`Could not fetch resource: ${response.status} ${response.statusText} - ${errorText}`);
 
         }
+        else {
+            document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
+        }
 
 
 
@@ -283,7 +286,6 @@ window.searchPlayer = async function() {
 
         document.getElementById('joindate').innerHTML = joindateFormatted;
 
-        document.getElementById('country').src = "/TeeViewer/countryflags/" + (countryName === "default" ? "default.png" : countryName + ".png");
 
         document.getElementById('clan').innerHTML = clan;
 
