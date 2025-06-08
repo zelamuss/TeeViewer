@@ -214,20 +214,7 @@ window.searchPlayer = async function() {
 
         const countryCodeNumeric = data.recent_player_info[0].country;
         const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
-        if (!response.ok) {
 
-            const errorText = await response.text();
-
-            if (errorText.includes("player not found")) {
-
-                if (playerInfoDiv) playerInfoDiv.innerHTML = "";
-
-                document.getElementById('name').innerHTML = `Player "${playerName}" not found.`;
-                document.getElementById('country').innerHTML = "";
-
-                return;
-
-            }
 
             throw new Error(`Could not fetch resource: ${response.status} ${response.statusText} - ${errorText}`);
 
@@ -268,7 +255,7 @@ window.searchPlayer = async function() {
         const playtimeHours = Math.trunc(playtimeSeconds / 3600);
 
 
-
+    
         
 
         const regionNames = new Intl.DisplayNames(
@@ -276,11 +263,24 @@ window.searchPlayer = async function() {
         ['en'], {type: 'region'}
 
         );
-
+        
         const joindateFormatted = formatTimestamp(joindateRaw);
 
         const lastseenFormatted = formatTimestamp(lastseenRaw);
+        if (!response.ok) {
 
+            const errorText = await response.text();
+
+            if (errorText.includes("player not found")) {
+
+                if (playerInfoDiv) playerInfoDiv.innerHTML = "";
+
+                document.getElementById('name').innerHTML = `Player "${playerName}" not found.`;
+                document.getElementById('country').innerHTML = "";
+
+                return;
+
+            }
         document.getElementById('playtime').innerHTML = `${playtimeHours} Hours`;
 
         document.getElementById('joindate').innerHTML = joindateFormatted;
