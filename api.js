@@ -282,7 +282,7 @@ window.searchPlayer = async function() {
 
         document.getElementById('joindate').innerHTML = joindateFormatted;
 
-        document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
+        document.getElementById('country').src = "/TeeViewer/countryflags/" + (countryName === "default" ? "default.png" : countryName + ".png");
 
         document.getElementById('clan').innerHTML = clan;
 
