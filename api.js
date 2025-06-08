@@ -203,6 +203,7 @@ window.searchPlayer = async function() {
         return;
 
     }
+    
 
 
 
@@ -219,9 +220,7 @@ window.searchPlayer = async function() {
             throw new Error(`Could not fetch resource: ${response.status} ${response.statusText} - ${errorText}`);
 
         }
-        else {
-            document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
-        }
+
 
 
 
@@ -281,6 +280,9 @@ window.searchPlayer = async function() {
                 return;
 
             }
+            else {
+            document.getElementById('country').innerHTML = countryName === "default" ? "Default" : regionNames.of(countryName);
+        }
         document.getElementById('playtime').innerHTML = `${playtimeHours} Hours`;
 
         document.getElementById('joindate').innerHTML = joindateFormatted;
