@@ -212,7 +212,7 @@ window.searchPlayer = async function() {
 
         const response = await fetch(apiUrl);
 
-
+        const countryCodeNumeric = data.recent_player_info[0].country;
         const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
         if (!response.ok) {
 
@@ -248,7 +248,7 @@ window.searchPlayer = async function() {
 
         const points = data.profile.points;
 
-        const countryCodeNumeric = data.recent_player_info[0].country;
+        
 
         const clan = data.profile.clan || 'N/A';
 
