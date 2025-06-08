@@ -223,6 +223,7 @@ window.searchPlayer = async function() {
                 if (playerInfoDiv) playerInfoDiv.innerHTML = "";
 
                 document.getElementById('name').innerHTML = `Player "${playerName}" not found.`;
+                document.getElementById('country').innerHTML = "";
 
                 return;
 
