@@ -343,37 +343,7 @@ window.searchPlayer = async function() {
 
         playerNameInput.value = '';
 
-    } catch (error) {
 
-        console.error("Error in searchPlayer:", error);
-
-        if (playerInfoDiv) playerInfoDiv.innerHTML = `<p style="color: red;">An error occurred while fetching player data: ${error.message}. Please try again.</p>`;
-
-        document.getElementById('playtime').innerHTML = "";
-
-        document.getElementById('joindate').innerHTML = "";
-
-        document.getElementById('country').innerHTML = "";
-
-        document.getElementById('clan').innerHTML = "";
-
-        document.getElementById('points').innerHTML = "";
-
-        document.getElementById('lastseen').innerHTML = "";
-
-        document.getElementById('name').innerHTML = "";
-
-        if (typeof myTee !== 'undefined' && myTee !== null) {
-
-            myTee.api.functions.unbindContainer();
-
-            myTee = null;
-
-            document.querySelector('.teeassembler-tee').innerHTML = '';
-
-        }
-
-    }
 
 }
 
