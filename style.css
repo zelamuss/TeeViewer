@@ -1,14 +1,14 @@
 /* Font Definitions */
 @font-face {
     font-family: 'SF Pro Rounded';
-    src: url('/fonts/sfproroundedbold.ttf') format('truetype');
+    src: url('/TeeViewer/fonts/sfproroundedbold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'SF Pro Rounded';
-    src: url('/fonts/sfprorounded.otf') format('opentype');
+    src: url('/TeeViewer/fonts/sfprorounded.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
