@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Search - TeeViewer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mapsstyle.css">
+
+</head>
+<body>
+    <div class="topbar">
+        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
+        <div class="nav-buttons">
+            <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
+            <button class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')" class="categories active" id="maps">Maps</button>
+            <button class="categories" id="servers">Servers</button>
+        </div>
+    </div>
+
+    <div class="map-search-container">
+        <input type="text" id="mapSearch" placeholder="Enter Map Name (e.g., Multeasymap)">
+        <button id="mapSearchButton" onclick="searchMap()">Search Map</button>
+    </div>
+
+    <div id="mapResults"></div>
+
+    <script>
+        // Global variables
+        let currentMapData = null;
+
+        // Page navigation with slide animation
+        function navigateToPage(url) {
+            document.body.style.transform = 'translateX(-100%)';
+            document.body.style.transition = 'transform 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 250);
+        }
+
+        // Format timestamp function
+        const formatTimestamp = (timestamp) => {
+            if (!timestamp) return 'N/A';
+            try {
+                const date = new Date(timestamp);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return 'Invalid Date';
+            }
+        };
+
+        // Search map function
+        async function searchMap() {
+            const mapNameInput = document.getElementById('mapSearch');
+            const mapName = mapNameInput.value.trim();
+            const resultsDiv = document.getElementById('mapResults');
+            const button = document.getElementById('mapSearchButton');
+
+            if (!mapName) {
+                resultsDiv.innerHTML = '<div class="error-message">Please enter a map name.</div>';
+                return;
+            }
+
+            // Show loading state
+            button.innerHTML = '<div class="loading"></div> Searching...';
+            button.disabled = true;
+            resultsDiv.innerHTML = '<div class="loading-container"><div class="loading"></div><p>Searching for map...</p></div>';
+
+            try {
+                const apiUrl = `https://api.status.tw/map/name/${encodeURIComponent(mapName)}`;
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        resultsDiv.innerHTML = `<div class="no-results">Map "${mapName}" not found.</div>`;
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentMapData = data;
+                displayMapResults(data);
+
+            } catch (error) {
+                console.error('Error searching map:', error);
+                resultsDiv.innerHTML = `<div class="error-message">An error occurred while searching for the map: ${error.message}</div>`;
+            } finally {
+                button.innerHTML = 'Search Map';
+                button.disabled = false;
+            }
+        }
+
+        // Display map results
+        function displayMapResults(data) {
+            const resultsDiv = document.getElementById('mapResults');
+            
+            if (!data || !data.servers) {
+                resultsDiv.innerHTML = '<div class="no-results">No data available for this map.</div>';
+                return;
+            }
+
+            const mapCreated = formatTimestamp(data.createdAt);
+            const serverCount = data.servers.length;
+            const totalPlayers = data.servers.reduce((sum, server) => sum + server.numPlayers, 0);
+
+            let html = `
+                <div class="map-info-box">
+                    <div class="map-header">
+                        <div>
+                            <div class="map-name">${data.name}</div>
+                            <div class="map-created">Created: ${mapCreated}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--primary-color); font-size: 24px; font-weight: 600;">${totalPlayers}</div>
+                            <div style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Total Players</div>
+                        </div>
+                    </div>
+
+                    <div class="servers-section">
+                        <div class="servers-header">
+                            Servers Running This Map
+                            <span class="server-count">${serverCount}</span>
+                        </div>
+            `;
+
+            if (serverCount === 0) {
+                html += '<div class="no-results">No servers currently running this map.</div>';
+            } else {
+                data.servers.forEach(server => {
+                    html += generateServerCard(server);
+                });
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Generate server card HTML
+        function generateServerCard(server) {
+            const badges = [];
+            
+            if (server.hasPassword) {
+                badges.push('<span class="server-badge password-badge">🔒 Password</span>');
+            }
+            
+            if (server.supports6) badges.push('<span class="server-badge">0.6</span>');
+            if (server.supports7) badges.push('<span class="server-badge">0.7</span>');
+
+            let playersHtml = '';
+            if (server.clients && server.clients.length > 0) {
+                playersHtml = `
+                    <div class="players-section">
+                        <div class="players-header">Players (${server.numPlayers}/${server.maxPlayers})</div>
+                        <div class="players-grid">
+                `;
+
+                server.clients.forEach(client => {
+                    const afkClass = client.isAfk ? 'afk-indicator' : '';
+                    const clanTag = client.clan ? `<span class="clan-tag">[${client.clan.name}]</span>` : '';
+                    
+                    playersHtml += `
+                        <div class="player-item ${afkClass}">
+                            <img class="player-flag" src="${client.country.iconUrl}" alt="${client.country.identifier}" title="${client.country.identifier}">
+                            <span class="player-name">${client.name}</span>
+                            ${clanTag}
+                            ${client.isAfk ? '<span style="color: #888; font-size: 12px;">(AFK)</span>' : ''}
+                        </div>
+                    `;
+                });
+
+                playersHtml += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="server-card">
+                    <div class="server-header">
+                        <div>
+                            <div class="server-name">${server.name}</div>
+                            <div class="server-info">
+                                <span>🌐 ${server.ip}:${server.port}</span>
+                                <span>👥 ${server.numPlayers}/${server.maxPlayers}</span>
+                                <span>🎮 ${server.gameType.name}</span>
+                                <span>📦 ${server.version.version}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start;">
+                            ${badges.join('')}
+                        </div>
+                    </div>
+                    ${playersHtml}
+                </div>
+            `;
+        }
+
+        // Add enter key support for search
+        document.getElementById('mapSearch').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchMap();
+            }
+        });
+
+        // Navigation button functionality
+        document.getElementById('clans').addEventListener('click', () => {
+            console.log('Navigate to Clans');
+        });
+
+        document.getElementById('servers').addEventListener('click', () => {
+            console.log('Navigate to Servers');
+        });
+
+        // Page load animation
+        window.addEventListener('load', () => {
+            document.body.classList.add('page-transition');
+        });
+
+        // Page transition from other pages
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                document.body.style.transform = 'translateX(0)';
+                document.body.style.transition = 'transform 0.5s ease-in-out';
+            }
+        });
+
+        // Add focus animation to search input
+        document.getElementById('mapSearch').addEventListener('focus', function() {
+            this.style.transform = 'scale(1.02)';
+        });
+
+        document.getElementById('mapSearch').addEventListener('blur', function() {
+            this.style.transform = 'scale(1)';
+        });
+
+        // Auto-search for Multeasymap on page load (for demo purposes)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('mapSearch').value = 'Multeasymap';
+                searchMap();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

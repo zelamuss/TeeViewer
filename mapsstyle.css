@@ -1,0 +1,267 @@
+/* Additional styles for maps page */
+.map-search-container {
+    text-align: center;
+    margin: 40px auto;
+    max-width: 600px;
+}
+#mapSearch {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    height: 50px;
+    width: 400px;
+    border-radius: 8px;
+    font-family: 'SF Pro Rounded', sans-serif;
+    color: var(--text-color);
+    margin: 20px auto;
+    display: block;
+    font-size: 18px;
+    padding: 0 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+#mapSearch:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+    transform: scale(1.02);
+}
+
+#mapSearch::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#mapSearchButton {
+    background: linear-gradient(135deg, var(--primary-color), #ff3300);
+    border: none;
+    height: 50px;
+    width: 150px;
+    border-radius: 8px;
+    font-family: 'SF Pro Rounded', sans-serif;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px auto;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(255, 69, 0, 0.3);
+}
+
+#mapSearchButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4);
+    background: linear-gradient(135deg, #ff3300, var(--primary-color));
+}
+
+#mapSearchButton:active {
+    transform: translateY(0);
+}
+.map-info-box {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 30px;
+    margin: 30px auto;
+    max-width: 1000px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.map-name {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+}
+
+.map-created {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 5px;
+}
+
+.servers-section {
+    margin-top: 30px;
+}
+
+.servers-header {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.server-count {
+    background: rgba(255, 69, 0, 0.2);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.server-card {
+    background: rgba(26, 26, 26, 0.6);
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.server-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 69, 0, 0.4);
+}
+
+.server-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.server-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.server-info {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    flex-wrap: wrap;
+}
+
+.server-badge {
+    background: rgba(255, 69, 0, 0.2);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.password-badge {
+    background: rgba(255, 69, 0, 0.3);
+    color: #ffaa66;
+}
+
+.players-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 69, 0, 0.2);
+}
+
+.players-header {
+    font-size: 12px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.player-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    
+}
+
+.player-flag {
+    width: 32px;
+    height: 16px;
+    border-radius: 2px;
+}
+
+.player-name {
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 100%;
+    font-display: swap;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.clan-tag {
+    color: rgba(255, 69, 0, 0.8);
+    font-size: 12px;
+}
+
+.afk-indicator {
+    opacity: 0.5;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 18px;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff6666;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+@media (max-width: 768px) {
+    .map-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .map-name {
+        font-size: 28px;
+    }
+
+    .server-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .server-info {
+        gap: 10px;
+    }
+
+    .players-grid {
+        grid-template-columns: 1fr;
+    }
+}

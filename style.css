@@ -1,0 +1,598 @@
+/* Font Definitions */
+@font-face {
+    font-family: 'SF Pro Rounded';
+    src: url('/fonts/sfproroundedbold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF Pro Rounded';
+    src: url('/fonts/sfprorounded.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Keyframes */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #f7d518, 0 0 40px #fdeb47, 0 0 50px #ff6600, 0 0 60px #f58821, 0 0 70px #ff6600;
+    }
+    to {
+        text-shadow: 0 0 20px #fff, 0 0 30px #f5a91d, 0 0 40px #7e5200, 0 0 50px #ff3300, 0 0 60px #ff4400, 0 0 70px #ff4400, 0 0 80px #ff4400;
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Root Variables */
+:root {
+    --topbar-height: 70px;
+    --primary-color: #ff891b; /* True orange */
+    --secondary-color: #1a1a1a; /* Darker */
+    --text-color: white;
+    --glass-bg: rgba(26, 26, 26, 0.85);
+    --glass-border: rgba(255, 69, 0, 0.2);
+    --dark-bg: #0a0a0a;
+}
+
+/* General Body Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+/* Animated background stars */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.4), transparent),
+        radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.5), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(1px 1px at 160px 30px, rgba(255, 255, 255, 0.4), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: float 25s ease-in-out infinite;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+/* Topbar Styles */
+.topbar {
+    backdrop-filter: blur(15px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    margin: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 25px;
+    height: var(--topbar-height);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 69, 0, 0.1);
+    animation: fadeInUp 0.8s ease-out;
+    position: relative;
+}
+
+.topbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    opacity: 0.5;
+}
+
+.logo {
+    height: 45px;
+    width: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 69, 0, 0.4));
+}
+
+.logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 12px rgba(255, 69, 0, 0.6));
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Categories Button Styles */
+.categories {
+    font-family: 'SF Pro Rounded', sans-serif;
+    background: linear-gradient(135deg, var(--primary-color), #ff3300);
+    border: none;
+    border-radius: 6px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 600;
+    min-width: 90px;
+    padding: 0 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(255, 69, 0, 0.3);
+}
+
+.categories::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.categories:hover::before {
+    left: 100%;
+}
+
+.categories:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 69, 0, 0.4);
+    background: linear-gradient(135deg, #ff3300, var(--primary-color));
+}
+
+.categories:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 69, 0, 0.3);
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 60px auto;
+    max-width: 1200px;
+    padding: 0 20px;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.hero-left {
+    flex: 1;
+    max-width: 600px;
+    animation: slideInFromLeft 1.2s ease-out 0.5s both;
+}
+
+.hero-logo {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin-bottom: 30px;
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.3));
+}
+
+.slogan {
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 700;
+    color: var(--primary-color);
+    animation: glow 2s ease-in-out infinite alternate;
+    line-height: 1.2;
+    margin-bottom: 30px;
+}
+
+/* Stats Section */
+.stats-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    max-width: 320px;
+    margin-left: auto;
+    animation: slideInFromRight 1.2s ease-out 0.6s both;
+}
+
+.stats {
+    backdrop-filter: blur(15px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--primary-color);
+    font-size: 28px;
+    font-weight: 700;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 69, 0, 0.05), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s ease;
+    opacity: 0;
+}
+
+.stats:hover::before {
+    opacity: 1;
+    animation: pulse 2s infinite;
+}
+
+.stats:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 8px 24px rgba(255, 69, 0, 0.2);
+    border-color: rgba(255, 69, 0, 0.4);
+}
+
+#numServers {
+    border-radius: 8px;
+}
+#numClans {
+    border-radius: 8px;
+}
+#numMaps {
+    border-radius: 8px;
+}
+
+/* Player Search Styles (for players.html) */
+#playerSearch {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    height: 50px;
+    width: 400px;
+    border-radius: 8px;
+    font-family: 'SF Pro Rounded', sans-serif;
+    color: var(--text-color);
+    margin: 20px auto;
+    display: block;
+    font-size: 18px;
+    padding: 0 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+#playerSearch:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+    transform: scale(1.02);
+}
+
+#playerSearch::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#playerSearchButton {
+    background: linear-gradient(135deg, var(--primary-color), #ff3300);
+    border: none;
+    height: 50px;
+    width: 150px;
+    border-radius: 8px;
+    font-family: 'SF Pro Rounded', sans-serif;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px auto;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(255, 69, 0, 0.3);
+}
+
+#playerSearchButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4);
+    background: linear-gradient(135deg, #ff3300, var(--primary-color));
+}
+
+#playerSearchButton:active {
+    transform: translateY(0);
+}
+
+/* Player Box Styles */
+.player-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    height: 180px;
+    margin: 20px auto;
+    max-width: 800px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.player-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 69, 0, 0.3);
+}
+
+.player-name {
+    flex: 2;
+    text-align: left;
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+}
+
+.player-tee {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    margin-right: 32%;
+    position: relative;
+}
+
+.player-tee img {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+}
+
+#CountryFlag {
+    flex: 1;
+    text-align: right;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+    max-width: 60px;
+    height: auto;
+}
+
+#CountryFlag:hover {
+    opacity: 1;
+}
+
+/* Player Table Styles */
+
+#profiletable{
+    justify-content: left;
+    align-items: left;
+    background-color: rgba(255, 69, 0, 0.1);
+    transition: background-color 0.2s ease;
+    width: 450px;
+    color: var(--primary-color);
+    border-radius: 8px;
+    margin: 3%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 1s ease-out 0.3s both;
+    overflow: hidden;
+    background: var(--glass-bg);
+}
+#playertable {
+    border-spacing: 0px;
+    border-collapse:collapse;
+    margin: 30px auto;
+    width: 90%;
+    text-align: center;
+    max-width: 900px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-size: 16px;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+#playertable th {
+    background: rgba(255, 69, 0, 0.1);
+    color: var(--primary-color);
+    padding: 15px;
+    font-weight: 600;
+    border-style: none;
+}
+
+#playertable td {
+    padding: 15px;
+    transition: background-color 0.2s ease;
+    border-style: none;
+}
+
+#inforesult:hover {
+    background: rgba(255, 69, 0, 0.05);
+}
+
+#inforesult {
+    background: rgba(255, 69, 0, 0.02);
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 69, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Page Transition */
+.page-transition {
+    animation: slideInFromRight 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        margin: 40px auto;
+    }
+
+    .stats-container {
+        margin: 40px auto 0;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .nav-buttons {
+        gap: 8px;
+    }
+
+    .categories {
+        min-width: 75px;
+        font-size: 14px;
+        height: 40px;
+        padding: 0 12px;
+    }
+
+    .topbar {
+        padding: 10px 15px;
+        margin: 5px;
+    }
+
+    .logo {
+        height: 35px;
+    }
+
+    #playerSearch {
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    .player-box {
+        margin: 20px 10px;
+        padding: 20px;
+        height: 160px;
+    }
+
+    .player-name {
+        font-size: 24px;
+    }
+
+    #playertable {
+        width: 95%;
+        font-size: 14px;
+    }
+
+    #playertable th,
+    #playertable td {
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slogan {
+        font-size: 32px;
+    }
+
+    .stats {
+        font-size: 24px;
+        padding: 15px;
+    }
+
+    .nav-buttons {
+        gap: 5px;
+    }
+
+    .categories {
+        min-width: 65px;
+        font-size: 12px;
+        height: 35px;
+    }
+
+    .player-box {
+        flex-direction: column;
+        height: auto;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .player-name {
+        margin-bottom: 15px;
+    }
+
+    #CountryFlag {
+        margin-top: 15px;
+    }
+}

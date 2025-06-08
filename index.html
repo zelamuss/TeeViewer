@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeeViewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="topbar">
+        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
+        <div class="nav-buttons">
+            <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-left">
+            <img class="hero-logo" src="logo.png" alt="TeeViewer Logo">
+            <div class="slogan">Your Teeworlds Journey, Visualized.</div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stats" id="onlineplayercount">
+                <div class="loading"></div> Loading Players...
+            </div>
+            <div class="stats" id="numServers">
+                <div class="loading"></div> Loading Servers...
+            </div>
+            <div class="stats" id="numClans">
+                <div class="loading"></div> Loading Clans...
+            </div>
+            <div class="stats" id="numMaps">
+                <div class="loading"></div> Loading Maps...
+            </div>
+        </div>
+    </div>
+
+    <script src='TeeAssembler/js/color.js'></script>
+    <script src='TeeAssembler/js/TeeAssembler.js'></script>
+    <script src="api.js" type="module"></script>
+    <script>
+        // Page navigation with slide animation
+        function navigateToPage(url) {
+            document.body.style.transform = 'translateX(-100%)';
+            document.body.style.transition = 'transform 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 250);
+        }
+
+        // Simulate loading stats data
+        function loadStats() {
+            const stats = [
+                { id: 'onlineplayercount', value: '1,247', label: 'Online Players' },
+                { id: 'numServers', value: '156', label: 'Active Servers' },
+                { id: 'numClans', value: '423', label: 'Registered Clans' },
+                { id: 'numMaps', value: '2,891', label: 'Available Maps' }
+            ];
+
+            stats.forEach((stat, index) => {
+                setTimeout(() => {
+                    const element = document.getElementById(stat.id);
+                    element.innerHTML = `<div style="font-size: 32px; margin-bottom: 8px;">${stat.value}</div><div style="font-size: 14px; opacity: 0.7; font-weight: normal;">${stat.label}</div>`;
+                }, (index + 1) * 600);
+            });
+        }
+
+        // Navigation button functionality
+        document.getElementById('clans').addEventListener('click', () => {
+            console.log('Navigate to Clans');
+        });
+
+        document.getElementById('maps').addEventListener('click', () => {
+            console.log('Navigate to Maps');
+        });
+
+        document.getElementById('servers').addEventListener('click', () => {
+            console.log('Navigate to Servers');
+        });
+
+        // Load stats when page loads
+        window.addEventListener('load', () => {
+            document.body.classList.add('page-transition');
+            loadStats();
+        });
+
+        // Add some interactivity to stats
+        document.querySelectorAll('.stats').forEach(stat => {
+            stat.addEventListener('click', () => {
+                stat.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    stat.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Page load animation
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                document.body.style.transform = 'translateX(0)';
+                document.body.style.transition = 'transform 0.5s ease-in-out';
+            }
+        });
+    </script>
+</body>
+</html>

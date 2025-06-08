@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Search - TeeViewer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel='stylesheet' href='TeeAssembler/css/Tee.css'>
+</head>
+<body>
+    <div class="topbar">
+        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
+        <div class="nav-buttons">
+            <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
+        </div>
+    </div>
+
+    <input type="text" id="playerSearch" placeholder="Enter Player Name">
+    <button id="playerSearchButton" onclick="searchPlayer()">Search</button>
+   
+    <div class="player-box">
+        <div class="player-name" id="name"></div>
+        <div class="player-tee"><div class='teeassembler-tee'></div></div>
+        <img id="CountryFlag" alt="">
+    </div>
+
+    <table id="playertable">
+    <tr id="info">
+        <th>Playtime</th>
+        <th>Points</th>
+        <th>Join Date</th>
+        <th>Last Seen</th>
+        <th>Country</th>
+        <th>Clan</th>
+    </tr>
+    <tr id="inforesult">
+        <td id="playtime"></td>
+        <td id="points"></td>
+        <td id="joindate"></td>
+        <td id="lastseen"></td>
+        <td id="country"></td>
+        <td id="clan"></td>
+    </tr>
+</table>
+    <div class="container">
+        <div class=box>
+            <h2 style="float:left">Profiles</h2>
+            <table id="profiletable">
+                <thead>
+                    <tr>
+                        <th>Last Seen</th>
+                        <th>Clan</th>
+                        <th>Country</th>
+                        <th>Skin</th>
+                    </tr>
+                </thead>
+    
+    
+
+        </div>
+    </div>
+    <script src='TeeAssembler/js/color.js'></script>
+    <script src='TeeAssembler/js/TeeAssembler.js'></script>
+    <script src="api.js" type="module"></script>     
+    </script>
+</body>
+</html>
