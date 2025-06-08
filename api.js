@@ -213,7 +213,7 @@ window.searchPlayer = async function() {
         const response = await fetch(apiUrl);
 
 
-
+        const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
         if (!response.ok) {
 
             const errorText = await response.text();
@@ -265,12 +265,12 @@ window.searchPlayer = async function() {
         const name = data.profile.name;
 
 
-
+        const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
         const playtimeHours = Math.trunc(playtimeSeconds / 3600);
 
 
 
-        const countryName = COUNTRY_CODES[countryCodeNumeric] || `Unknown (Code: ${countryCodeNumeric})`;
+        
 
         const regionNames = new Intl.DisplayNames(
 
