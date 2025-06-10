@@ -6,96 +6,96 @@
     <title>Maps - TeeViewer</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .maps-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-
-        .search-filters {
+        /* Additional styles for maps page */
+        .map-search-container {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .search-input {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 12px 20px;
-            color: var(--text-color);
-            font-family: 'SF Pro Rounded', sans-serif;
-            font-size: 16px;
-            min-width: 300px;
-            transition: all 0.3s ease;
             justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 40px auto;
         }
 
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+        .map-searcher-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 137, 27, 0.6);
+            animation: glow 2s ease-in-out infinite alternate;
         }
 
-        .filter-select {
-            background: var(--glass-bg);
+        #mapSearch {
+            background-color: var(--glass-bg);
             backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
+            height: 50px;
+            width: 500px;
             border-radius: 8px;
-            padding: 12px 15px;
-            color: var(--text-color);
             font-family: 'SF Pro Rounded', sans-serif;
-            font-size: 16px;
-            cursor: pointer;
+            color: var(--text-color);
+            font-size: 18px;
+            padding: 0 20px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
-        .filter-select:focus {
+        #mapSearch:focus {
             outline: none;
             border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+            transform: scale(1.02);
         }
 
-        .maps-table {
-            width: 100%;
+        #mapSearch::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        #mapsTable {
+            border-spacing: 0px;
+            border-collapse: collapse;
+            margin: 30px auto;
+            width: 95%;
+            text-align: center;
+            max-width: 1200px;
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            color: var(--text-color);
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border-collapse: collapse;
+            font-size: 16px;
+            animation: fadeInUp 1s ease-out 0.3s both;
         }
 
-        .maps-table th {
+        #mapsTable th {
             background: rgba(255, 69, 0, 0.1);
             color: var(--primary-color);
-            padding: 18px 15px;
+            padding: 15px;
             font-weight: 600;
-            text-align: center;
-            border: none;
-            font-size: 16px;
+            border-style: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .maps-table td {
-            text-align: center;
+        #mapsTable th:hover {
+            background: rgba(255, 69, 0, 0.2);
+        }
+
+        #mapsTable td {
             padding: 15px;
-            border: none;
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-style: none;
+            color: var(--primary-color);
         }
 
         .map-row {
+            cursor: pointer;
             transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(255, 69, 0, 0.1);
         }
 
         .map-row:hover {
             background: rgba(255, 69, 0, 0.05);
-            transform: scale(1.002);
         }
 
         .map-row.expanded {
@@ -104,149 +104,303 @@
 
         .map-details {
             display: none;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 69, 0, 0.03);
             border-top: 1px solid rgba(255, 69, 0, 0.2);
         }
 
         .map-details.show {
             display: table-row;
-            animation: fadeInUp 0.4s ease-out;
+            animation: fadeInDown 0.3s ease-out;
         }
 
-        .map-details-content {
-            padding: 25px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 25px;
+        .map-content {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .map-stats {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: var(--glass-bg);
+            border-radius: 6px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .stat-value {
             color: var(--text-color);
         }
 
-        .detail-section {
-            background: rgba(255, 69, 0, 0.05);
-            padding: 20px;
+        .map-preview-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .map-preview {
+            width: 100%;
+            height: 332px;
+            border: 1px solid var(--glass-border);
             border-radius: 8px;
-            border: 1px solid rgba(255, 69, 0, 0.1);
+            background: var(--glass-bg);
+            position: relative;
+            overflow: hidden;
         }
 
-        .detail-section h4 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: 600;
+        .map-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
-        .detail-item {
-            margin-bottom: 10px;
+        .map-preview:hover iframe {
+            transform: scale(1.02);
+        }
+
+        .preview-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-color);
         }
 
-        .detail-label {
-            font-weight: 500;
-            opacity: 0.8;
+        .preview-error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff4444;
+            text-align: center;
         }
 
-        .detail-value {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .stars {
-            color: #ffd700;
-        }
-
-        .server-tag {
-            background: linear-gradient(135deg, var(--primary-color), #ff3300);
-            color: white;
-            padding: 4px 8px;
+        .maximize-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            border: none;
             border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .maximize-btn:hover {
+            background: #ff3300;
+            transform: scale(1.1);
+        }
+
+        .type-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
+            color: white;
         }
 
-        .loading-maps {
-            text-align: center;
-            padding: 60px;
-            color: var(--primary-color);
-            font-size: 18px;
-        }
+        .type-novice { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .type-moderate { background: linear-gradient(135deg, #FF9800, #f57c00); }
+        .type-brutal { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .type-insane { background: linear-gradient(135deg, #9C27B0, #7b1fa2); }
+        .type-dummy { background: linear-gradient(135deg, #795548, #5d4037); }
+        .type-ddmax { background: linear-gradient(135deg, #607D8B, #455a64); }
+        .type-oldschool { background: linear-gradient(135deg, #9E9E9E, #616161); }
+        .type-solo { background: linear-gradient(135deg, #3F51B5, #303f9f); }
+        .type-race { background: linear-gradient(135deg, #E91E63, #c2185b); }
+        .type-fun { background: linear-gradient(135deg, #FFEB3B, #fbc02d); color: #333; }
 
-        .expand-icon {
-            transition: transform 0.3s ease;
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 18px;
-            margin-right: 10px;
-        }
-
-        .map-row.expanded .expand-icon {
-            transform: rotate(90deg);
-        }
-
-        .servers-list {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 69, 0, 0.2);
+        .active-servers-btn {
+            background: var(--primary-color);
+            border: none;
             border-radius: 6px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .active-servers-btn:hover {
+            background: #ff3300;
+            transform: scale(1.05);
+        }
+
+        .servers-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: none;
+            animation: fadeInScale 0.3s ease-out;
+        }
+
+        .servers-popup.show {
+            display: block;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .popup-overlay.show {
+            display: block;
         }
 
         .server-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            margin-bottom: 5px;
-            background: rgba(255, 69, 0, 0.05);
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 69, 0, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .server-item:hover {
+            background: rgba(255, 69, 0, 0.2);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
         }
 
         .server-name {
-            flex: 1;
-            font-weight: 500;
-        }
-
-        .server-players {
-            color: var(--primary-color);
             font-weight: 600;
-            margin-left: 10px;
+            color: var(--primary-color);
         }
 
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 18px;
+        .server-info {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 69, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .maximized-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .maximized-preview.show {
+            display: flex;
+        }
+
+        .maximized-preview iframe {
+            width: 90vw;
+            height: 90vh;
+            border-radius: 8px;
+        }
+
+        .stars {
+            color: #FFD700;
         }
 
         @media (max-width: 768px) {
-            .search-filters {
+            .map-content {
                 flex-direction: column;
-                align-items: stretch;
             }
-
-            .search-input {
-                min-width: auto;
-                width: 100%;
+            
+            .map-preview-container {
+                max-width: 100%;
             }
-
-            .maps-table {
-                font-size: 14px;
-                text-align: center
+            
+            #mapSearch {
+                width: 90%;
             }
-
-            .maps-table th,
-            .maps-table td {
-                padding: 10px;
-                text-align: center
-            }
-
-            .map-details-content {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                padding: 15px;
+            
+            .servers-popup {
+                width: 90%;
+                max-width: none;
             }
         }
     </style>
@@ -262,59 +416,50 @@
         </div>
     </div>
 
-    <div class="maps-container">
-        <h1 style="text-align: center; color: var(--primary-color); font-size: 36px; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);">
-            Map Browser
-        </h1>
+    <div class="map-search-container">
+        <div class="map-searcher-title">Map Searcher</div>
+        <input type="text" id="mapSearch" placeholder="Search for maps...">
+    </div>
 
-        <div class="search-filters">
-            <input type="text" id="mapSearch" class="search-input" placeholder="Search maps by name...">
-            <select id="serverFilter" class="filter-select">
-                <option value="">All Types</option>
-                <option value="Novice">Novice</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Brutal">Brutal</option>
-                <option value="Insane">Insane</option>
-                <option value="Dummy">Dummy</option>
-                <option value="DDmaX">DDmaX</option>
-                <option value="Oldschool">Oldschool</option>
-                <option value="Solo">Solo</option>
-            </select>
-            <select id="sortBy" class="filter-select">
-                <option value="name">Sort by Name</option>
-                <option value="points">Sort by Points</option>
-                <option value="stars">Sort by Stars</option>
-                <option value="timestamp">Sort by Release Date</option>
-            </select>
-        </div>
+    <table id="mapsTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable('map')">Map Name</th>
+                <th onclick="sortTable('server')">Type</th>
+                <th onclick="sortTable('points')">Points</th>
+                <th onclick="sortTable('stars')">Stars</th>
+                <th onclick="sortTable('mapper')">Mapper</th>
+                <th onclick="sortTable('timestamp')">Release Date</th>
+                <th>Active Servers</th>
+            </tr>
+        </thead>
+        <tbody id="mapsTableBody">
+            <tr>
+                <td colspan="7" style="padding: 40px;">
+                    <div class="loading" style="margin: 0 auto;"></div>
+                    <div style="margin-top: 15px;">Loading maps...</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-        <table class="maps-table" id="mapsTable">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Map Name</th>
-                    <th>Type</th>
-                    <th>Points</th>
-                    <th>Stars</th>
-                    <th>Mapper</th>
-                    <th>Release Date</th>
-                </tr>
-            </thead>
-            <tbody id="mapsTableBody">
-                <tr>
-                    <td colspan="7" class="loading-maps">
-                        <div class="loading" style="margin: 0 auto 20px;"></div>
-                        Loading maps data...
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Popup for server list -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="servers-popup" id="serversPopup">
+        <button class="close-popup" onclick="closeServersPopup()">&times;</button>
+        <h3 style="color: var(--primary-color); margin-bottom: 15px;">Active Servers</h3>
+        <div id="serversList"></div>
+    </div>
+
+    <!-- Maximized preview -->
+    <div class="maximized-preview" id="maximizedPreview">
+        <button class="close-popup" onclick="closeMaximizedPreview()" style="position: absolute; top: 20px; right: 30px; font-size: 30px; z-index: 2001;">&times;</button>
+        <iframe id="maximizedIframe"></iframe>
     </div>
 
     <script>
         let allMaps = [];
-        let filteredMaps = [];
-        let expandedMaps = new Set();
+        let currentSort = { column: null, direction: 'asc' };
 
         // Page navigation
         function navigateToPage(url) {
@@ -326,258 +471,301 @@
             }, 250);
         }
 
-        // Format timestamp
-        function formatTimestamp(timestamp) {
-            if (!timestamp) return 'N/A';
-            try {
-                const date = new Date(timestamp);
-                return date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
-                });
-            } catch (e) {
-                return 'Invalid Date';
-            }
-        }
-
-        // Generate stars display
-        function generateStars(count) {
-            return '★'.repeat(count) + '☆'.repeat(5 - count);
-        }
-
-        // Load all maps
+        // Load maps data
         async function loadMaps() {
             try {
                 const response = await fetch('https://ddstats.tw/maps/json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                allMaps = await response.json();
-                filteredMaps = [...allMaps];
-                sortMaps('name');
-                renderMaps();
+                const data = await response.json();
+                allMaps = data;
+                displayMaps(allMaps);
             } catch (error) {
                 console.error('Error loading maps:', error);
                 document.getElementById('mapsTableBody').innerHTML = `
                     <tr>
-                        <td colspan="7" class="no-results">
-                            Failed to load maps data. Please try again later.
+                        <td colspan="7" style="color: #ff4444; padding: 40px;">
+                            Error loading maps. Please try again later.
                         </td>
                     </tr>
                 `;
             }
         }
 
-        // Load map details
-        async function loadMapDetails(mapName) {
-            try {
-                const response = await fetch(`https://api.status.tw/map/name/${encodeURIComponent(mapName)}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+        // Display maps in table
+        function displayMaps(maps) {
+            const tbody = document.getElementById('mapsTableBody');
+            tbody.innerHTML = '';
+
+            maps.forEach((map, index) => {
+                const row = document.createElement('tr');
+                row.className = 'map-row';
+                row.onclick = () => toggleMapDetails(index, map.map);
                 
-                return await response.json();
-            } catch (error) {
-                console.error('Error loading map details:', error);
-                return null;
-            }
-        }
-
-        // Sort maps
-        function sortMaps(sortBy) {
-            filteredMaps.sort((a, b) => {
-                switch (sortBy) {
-                    case 'name':
-                        return a.map.localeCompare(b.map);
-                    case 'points':
-                        return b.points - a.points;
-                    case 'stars':
-                        return b.stars - a.stars;
-                    case 'timestamp':
-                        return new Date(b.timestamp) - new Date(a.timestamp);
-                    default:
-                        return 0;
-                }
-            });
-        }
-
-        // Filter maps
-        function filterMaps() {
-            const searchTerm = document.getElementById('mapSearch').value.toLowerCase();
-            const serverFilter = document.getElementById('serverFilter').value;
-            
-            filteredMaps = allMaps.filter(map => {
-                const matchesSearch = map.map.toLowerCase().includes(searchTerm) || 
-                                    map.mapper.toLowerCase().includes(searchTerm);
-                const matchesServer = !serverFilter || map.server.includes(serverFilter);
+                const typeClass = getTypeClass(map.server);
+                const starsHtml = '★'.repeat(map.stars || 0);
                 
-                return matchesSearch && matchesServer;
-            });
-
-            const sortBy = document.getElementById('sortBy').value;
-            sortMaps(sortBy);
-            renderMaps();
-        }
-
-        // Toggle map details
-        async function toggleMapDetails(mapName, rowIndex) {
-            const detailsRow = document.getElementById(`details-${rowIndex}`);
-            const mapRow = document.querySelector(`[data-row="${rowIndex}"]`);
-            
-            if (expandedMaps.has(mapName)) {
-                // Collapse
-                expandedMaps.delete(mapName);
-                detailsRow.classList.remove('show');
-                mapRow.classList.remove('expanded');
-                setTimeout(() => {
-                    detailsRow.style.display = 'none';
-                }, 300);
-            } else {
-                // Expand
-                expandedMaps.add(mapName);
-                mapRow.classList.add('expanded');
-                detailsRow.style.display = 'table-row';
+                row.innerHTML = `
+                    <td>${map.map}</td>
+                    <td><span class="type-badge ${typeClass}">${map.server}</span></td>
+                    <td>${map.points}</td>
+                    <td><span class="stars">${starsHtml}</span></td>
+                    <td>${map.mapper || 'Unknown'}</td>
+                    <td>${formatDate(map.timestamp)}</td>
+                    <td><button class="active-servers-btn" onclick="event.stopPropagation(); showActiveServers('${map.map}')">View Servers</button></td>
+                `;
                 
-                // Show loading state
+                tbody.appendChild(row);
+                
+                // Create details row
+                const detailsRow = document.createElement('tr');
+                detailsRow.className = 'map-details';
+                detailsRow.id = `details-${index}`;
                 detailsRow.innerHTML = `
                     <td colspan="7">
-                        <div class="map-details-content">
-                            <div style="text-align: center; grid-column: 1 / -1; padding: 40px;">
-                                <div class="loading" style="margin: 0 auto 20px;"></div>
-                                Loading map details...
+                        <div class="map-content">
+                            <div class="map-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Map Name:</span>
+                                    <span class="stat-value">${map.map}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Type:</span>
+                                    <span class="stat-value"><span class="type-badge ${typeClass}">${map.server}</span></span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Points:</span>
+                                    <span class="stat-value">${map.points}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Difficulty:</span>
+                                    <span class="stat-value stars">${starsHtml}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Mapper:</span>
+                                    <span class="stat-value">${map.mapper || 'Unknown'}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Release Date:</span>
+                                    <span class="stat-value">${formatDate(map.timestamp)}</span>
+                                </div>
+                            </div>
+                            <div class="map-preview-container">
+                                <div class="map-preview" id="preview-${index}">
+                                    <div class="preview-loading">
+                                        <div class="loading"></div>
+                                        <div>Loading preview...</div>
+                                    </div>
+                                    <button class="maximize-btn" onclick="maximizePreview('${encodeURIComponent(map.map)}')">⛶</button>
+                                </div>
                             </div>
                         </div>
                     </td>
                 `;
                 
-                setTimeout(() => detailsRow.classList.add('show'), 10);
-                
-                // Load actual details
-                const mapDetails = await loadMapDetails(mapName);
-                if (mapDetails) {
-                    renderMapDetails(detailsRow, mapDetails);
-                } else {
-                    detailsRow.innerHTML = `
-                        <td colspan="7">
-                            <div class="map-details-content">
-                                <div style="text-align: center; grid-column: 1 / -1; padding: 40px; color: rgba(255, 255, 255, 0.6);">
-                                    Failed to load map details.
-                                </div>
-                            </div>
-                        </td>
-                    `;
-                }
-            }
-        }
-
-        // Render map details
-        function renderMapDetails(detailsRow, mapDetails) {
-            const totalServers = mapDetails.servers?.length || 0;
-            const totalPlayers = mapDetails.servers?.reduce((sum, server) => sum + server.numPlayers, 0) || 0;
-            const avgPlayers = totalServers > 0 ? (totalPlayers / totalServers).toFixed(1) : 0;
-
-            detailsRow.innerHTML = `
-                <td colspan="7">
-                    <div class="map-details-content">
-                        <div class="detail-section">
-                            <h4>📊 Statistics</h4>
-                            <div class="detail-item">
-                                <span class="detail-label">Total Servers:</span>
-                                <span class="detail-value">${totalServers}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Total Players:</span>
-                                <span class="detail-value">${totalPlayers}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Avg Players/Server:</span>
-                                <span class="detail-value">${avgPlayers}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <h4>🎮 Game Info</h4>
-                            <div class="detail-item">
-                                <span class="detail-label">Map Name:</span>
-                                <span class="detail-value">${mapDetails.name}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Has Server:</span>
-                                <span class="detail-value">${totalServers > 0 ? 'Yes' : 'No'}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Status:</span>
-                                <span class="detail-value" style="color: ${totalPlayers > 0 ? '#4CAF50' : '#FFA500'}">
-                                    ${totalPlayers > 0 ? 'Active' : 'Available'}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <h4>🖥️ Active Servers</h4>
-                            ${totalServers > 0 ? `
-                                <div class="servers-list">
-                                    ${mapDetails.servers.map(server => `
-                                        <div class="server-item">
-                                            <span class="server-name">${server.name}</span>
-                                            <span class="server-players">${server.numPlayers}/${server.maxPlayers}</span>
-                                        </div>
-                                    `).join('')}
-                                    
-                                </div>
-                            ` : '<div style="text-align: center; color: rgba(255, 255, 255, 0.6); padding: 20px;">No active servers</div>'}
-                        </div>
-                    </div>
-                </td>
-            `;
-        }
-
-        // Render maps table
-        function renderMaps() {
-            const tbody = document.getElementById('mapsTableBody');
-            
-            if (filteredMaps.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="no-results">
-                            No maps found matching your criteria.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            let html = '';
-            filteredMaps.forEach((map, index) => {
-                html += `
-                    <tr class="map-row" data-row="${index}" onclick="toggleMapDetails('${map.map}', ${index})">
-                        <td><span class="expand-icon">▶</span></td>
-                        <td style="font-weight: 600; color: var(--primary-color);">${map.map}</td>
-                        <td><span class="server-tag">${map.server}</span></td>
-                        <td style="color: var(--primary-color); font-weight: 600;">${map.points}</td>
-                        <td><span class="stars">${generateStars(map.stars)}</span></td>
-                        <td>${map.mapper}</td>
-                        <td>${formatTimestamp(map.timestamp)}</td>
-                    </tr>
-                    <tr id="details-${index}" class="map-details">
-                        <td colspan="7"></td>
-                    </tr>
-                `;
+                tbody.appendChild(detailsRow);
             });
-
-            tbody.innerHTML = html;
         }
 
-        // Event listeners
-        document.getElementById('mapSearch').addEventListener('input', filterMaps);
-        document.getElementById('serverFilter').addEventListener('change', filterMaps);
-        document.getElementById('sortBy').addEventListener('change', () => {
-            const sortBy = document.getElementById('sortBy').value;
-            sortMaps(sortBy);
-            renderMaps();
+        // Toggle map details
+        function toggleMapDetails(index, mapName) {
+            const detailsRow = document.getElementById(`details-${index}`);
+            const mapRow = document.querySelectorAll('.map-row')[index];
+            
+            if (detailsRow.classList.contains('show')) {
+                detailsRow.classList.remove('show');
+                mapRow.classList.remove('expanded');
+            } else {
+                // Close other expanded rows
+                document.querySelectorAll('.map-details.show').forEach(row => {
+                    row.classList.remove('show');
+                });
+                document.querySelectorAll('.map-row.expanded').forEach(row => {
+                    row.classList.remove('expanded');
+                });
+                
+                detailsRow.classList.add('show');
+                mapRow.classList.add('expanded');
+                loadMapPreview(index, mapName);
+            }
+        }
+
+        // Load map preview
+        function loadMapPreview(index, mapName) {
+            const previewContainer = document.getElementById(`preview-${index}`);
+            const encodedMapName = encodeURIComponent(mapName);
+            const previewUrl = `https://ddnet.org/mappreview/?map=${encodedMapName}`;
+            
+            setTimeout(() => {
+                const iframe = document.createElement('iframe');
+                iframe.src = previewUrl;
+                iframe.style.pointerEvents = 'none'; // Prevent scrolling website when hovering
+                
+                iframe.onload = () => {
+                    previewContainer.querySelector('.preview-loading').style.display = 'none';
+                    iframe.style.pointerEvents = 'auto'; // Re-enable interaction after load
+                };
+                
+                iframe.onerror = () => {
+                    previewContainer.innerHTML = `
+                        <div class="preview-error">Preview loading failed</div>
+                        <button class="maximize-btn" onclick="maximizePreview('${encodedMapName}')">⛶</button>
+                    `;
+                };
+                
+                previewContainer.appendChild(iframe);
+            }, 500);
+        }
+
+        // Maximize preview
+        function maximizePreview(encodedMapName) {
+            const maximizedPreview = document.getElementById('maximizedPreview');
+            const maximizedIframe = document.getElementById('maximizedIframe');
+            
+            maximizedIframe.src = `https://ddnet.org/mappreview/?map=${encodedMapName}`;
+            maximizedPreview.classList.add('show');
+        }
+
+        // Close maximized preview
+        function closeMaximizedPreview() {
+            document.getElementById('maximizedPreview').classList.remove('show');
+        }
+
+        // Show active servers
+        async function showActiveServers(mapName) {
+            try {
+                const response = await fetch(`https://api.status.tw/map/name/${encodeURIComponent(mapName)}`);
+                const data = await response.json();
+                
+                const serversList = document.getElementById('serversList');
+                serversList.innerHTML = '';
+                
+                if (data.servers && data.servers.length > 0) {
+                    data.servers.forEach(server => {
+                        const serverItem = document.createElement('div');
+                        serverItem.className = 'server-item';
+                        serverItem.onclick = () => copyToClipboard(`${server.ip}:${server.port}`);
+                        
+                        serverItem.innerHTML = `
+                            <div class="server-name">${server.name}</div>
+                            <div class="server-info">
+                                ${server.ip}:${server.port} | 
+                                Players: ${server.numPlayers}/${server.maxPlayers} | 
+                                ${server.hasPassword ? 'Password Protected' : 'Open'}
+                            </div>
+                        `;
+                        
+                        serversList.appendChild(serverItem);
+                    });
+                } else {
+                    serversList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.7);">No active servers found for this map.</div>';
+                }
+                
+                document.getElementById('popupOverlay').classList.add('show');
+                document.getElementById('serversPopup').classList.add('show');
+            } catch (error) {
+                console.error('Error loading servers:', error);
+                document.getElementById('serversList').innerHTML = '<div style="color: #ff4444;">Error loading servers.</div>';
+                document.getElementById('popupOverlay').classList.add('show');
+                document.getElementById('serversPopup').classList.add('show');
+            }
+        }
+
+        // Close servers popup
+        function closeServersPopup() {
+            document.getElementById('popupOverlay').classList.remove('show');
+            document.getElementById('serversPopup').classList.remove('show');
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show brief feedback
+                const tooltip = document.createElement('div');
+                tooltip.textContent = 'Copied!';
+                tooltip.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: var(--primary-color);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    z-index: 10000;
+                    font-weight: 600;
+                `;
+                document.body.appendChild(tooltip);
+                setTimeout(() => tooltip.remove(), 1500);
+            });
+        }
+
+        // Sort table
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            
+            const sortedMaps = [...allMaps].sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                if (column === 'timestamp') {
+                    aVal = new Date(aVal);
+                    bVal = new Date(bVal);
+                } else if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (aVal < bVal) return currentSort.direction === 'asc' ? -1 : 1;
+                if (aVal > bVal) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            displayMaps(sortedMaps);
+        }
+
+        // Search functionality
+        document.getElementById('mapSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredMaps = allMaps.filter(map => 
+                map.map.toLowerCase().includes(searchTerm) ||
+                map.server.toLowerCase().includes(searchTerm) ||
+                (map.mapper && map.mapper.toLowerCase().includes(searchTerm))
+            );
+            displayMaps(filteredMaps);
         });
+
+        // Helper functions
+        function getTypeClass(serverType) {
+            const type = serverType.toLowerCase();
+            if (type.includes('novice')) return 'type-novice';
+            if (type.includes('moderate')) return 'type-moderate';
+            if (type.includes('brutal')) return 'type-brutal';
+            if (type.includes('insane')) return 'type-insane';
+            if (type.includes('dummy')) return 'type-dummy';
+            if (type.includes('ddmax')) return 'type-ddmax';
+            if (type.includes('oldschool')) return 'type-oldschool';
+            if (type.includes('solo')) return 'type-solo';
+            if (type.includes('race')) return 'type-race';
+            if (type.includes('fun')) return 'type-fun';
+            return 'type-novice';
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Close popup when clicking overlay
+        document.getElementById('popupOverlay').addEventListener('click', closeServersPopup);
 
         // Navigation button functionality
         document.getElementById('clans').addEventListener('click', () => {
