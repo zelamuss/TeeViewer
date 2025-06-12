@@ -599,7 +599,8 @@
             const profile = playerData.recent_player_info[0];
             // Removed charAt(0) for playerAvatar, now TeeAssembler will handle it.
             // document.getElementById('playerAvatar').textContent = profile.name ? profile.name.charAt(0).toUpperCase() : '?';
-            const data = await playerData;
+            const data = playerData;
+            console.log(data)
             const skinbodyColor = data.recent_player_info[0].skin_color_body;
 
             const skinfeetColor = data.recent_player_info[0].skin_color_feet;
