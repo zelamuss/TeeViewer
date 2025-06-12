@@ -1,4 +1,4 @@
-export const COUNTRY_CODES = {
+window.COUNTRY_CODES = {
   "-1": "default",
   "901": "GB-ENG",
   "902": "GB-NIR",
