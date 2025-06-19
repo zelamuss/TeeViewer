@@ -12,6 +12,7 @@
     <script src="TeeAssembler/js/TeeAssembler.js"></script>
        <style>
         /* General styling for player search and display */
+        
         .player-search-container {
             max-width: 800px;
             margin: 20px auto;
@@ -189,6 +190,7 @@
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         .recent-finishes h2, .unfinished-maps h2, .additional-details h2, .favourite-teammates-section h2, .most-played-maps-section h2, .playtime-graph-section h2, .points-graph-section h2 {
@@ -389,11 +391,11 @@
     </div>
 
     <div id="playerStatsContainer" class="player-container">
-
         <div class="player-profile">
-        <div class='teeassembler-tee'></div>
+        
+        <div class='teeassembler-tee' style="cursor: pointer;"></div>
         <br>
-        <p style="text-align: center;"><strong>Click to Copy!</strong></p>
+        <p style="position: absolute; margin-top: 140px; margin-left: 3%;"><strong>Click to Copy!</strong></p>
 
             <div class="player-avatar" id="playerAvatar">
 
@@ -1161,7 +1163,7 @@
                 playerSearchInput.value = playerNameFromUrl;
                 searchPlayer();
             } else {
-                playerSearchInput.value = 'nameless tee'; // Default player if no URL param
+                playerSearchInput.value = 'Zelamus'; // Default player if no URL param
                 searchPlayer();
             }
         });
