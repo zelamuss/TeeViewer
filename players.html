@@ -6,10 +6,10 @@
     <title>Players - TeeViewer</title>
     <script src="api.js" type="module"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="TeeAssembler/Tee.css">
+    <link rel="stylesheet" href="TeeAssembler/css/Tee.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-    <script src="TeeAssembler/color.js"></script>
-    <script src="TeeAssembler/TeeAssembler.js"></script>
+    <script src="TeeAssembler/js/color.js"></script>
+    <script src="TeeAssembler/js/TeeAssembler.js"></script>
        <style>
         /* General styling for player search and display */
         .player-search-container {
@@ -694,10 +694,10 @@
             document.getElementById('playerCountry').textContent = countryName === "default" ? "Default" : regionNames.of(countryName);
 
             if (countryName !== "default") {
-                countryFlag.src = `countryFlags/${countryName}.png`;
+                countryFlag.src = `countryflags/${countryName}.png`;
                 countryFlag.style.display = 'inline-block';
             } else {
-                countryFlag.src = `countryFlags/default.png`;
+                countryFlag.src = `countryflags/default.png`;
                 countryFlag.style.display = 'inline-block';
             }
 
