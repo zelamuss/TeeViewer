@@ -1,1 +1,751 @@
-Work in progress! use maps and players instead
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clans - TeeViewer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .clans-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-input {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: var(--text-color);
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 16px;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+        }
+
+        .filter-select {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #clansTable {
+            border-spacing: 0px;
+            border-collapse: collapse;
+            margin: 30px auto;
+            width: 95%;
+            text-align: center;
+            max-width: 1200px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        #clansTable th {
+            background: rgba(255, 69, 0, 0.1);
+            color: var(--primary-color);
+            padding: 15px;
+            font-weight: 600;
+            border-style: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #clansTable th:hover {
+            background: rgba(255, 69, 0, 0.2);
+        }
+
+        #clansTable td {
+            padding: 15px;
+            transition: background-color 0.2s ease;
+            border-style: none;
+            color: var(--primary-color);
+        }
+
+        .clan-row {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clan-row:hover {
+            background: rgba(255, 69, 0, 0.05);
+        }
+
+        .clan-row.expanded {
+            background: rgba(255, 69, 0, 0.08);
+        }
+
+        .clan-details {
+            display: none;
+            background: rgba(255, 69, 0, 0.03);
+            border-top: 1px solid rgba(255, 69, 0, 0.2);
+        }
+
+        .clan-details.show {
+            display: table-row;
+            animation: fadeInDown 0.3s ease-out;
+        }
+
+        .clan-content {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .clan-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: var(--glass-bg);
+            border-radius: 6px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: var(--text-color);
+        }
+
+        .players-container {
+            flex: 2;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+        }
+
+        .player-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .player-card:hover {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            flex: 1;
+        }
+
+        .country-flag {
+            width: 30px;
+            height: 15px;
+            border-radius: 2px;
+        }
+
+        .player-status {
+            display: flex;
+            gap: 5px;
+        }
+
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .status-online { background: #4CAF50; }
+        .status-afk { background: #FF9800; }
+        .status-offline { background: #9E9E9E; }
+
+        .player-info {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        .server-info {
+            background: rgba(255, 69, 0, 0.05);
+            border-radius: 4px;
+            padding: 6px;
+            margin-top: 6px;
+            font-size: 11px;
+        }
+
+        .clan-stats-badges {
+            display: flex;
+            gap: 10px;
+
+
+            justify-content: center;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, var(--primary-color), #ff3300);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 69, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            padding: 20px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 137, 27, 0.6); }
+            to { text-shadow: 0 0 30px rgba(255, 137, 27, 0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .clan-content {
+                flex-direction: column;
+            }
+            
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input {
+                min-width: auto;
+                width: 90%;
+            }
+
+            .search-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+
+            .clan-stats-badges {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        .players-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .players-container::-webkit-scrollbar-track {
+            background: rgba(255, 69, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .players-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .players-container::-webkit-scrollbar-thumb:hover {
+            background: #ff3300;
+        }
+    </style>
+    <script src="./country_codes.js"></script>
+</head>
+<body>
+    <div class="topbar">
+        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
+        <div class="nav-buttons">
+            <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
+            <button onclick="navigateToPage('clans.html')" class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')" class="categories" id="maps">Maps</button>
+            <button class="categories" id="servers">Servers</button>
+        </div>
+    </div>
+
+    <div class="clans-container">
+        <h1 style="text-align: center; color: var(--primary-color); font-size: 36px; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); animation: glow 2s ease-in-out infinite alternate;">
+            Clan Browser
+        </h1>
+
+        <div class="search-filters">
+            <input type="text" id="clanSearch" class="search-input" placeholder="Search clans by name or player...">
+            
+            <select id="sortBy" class="filter-select">
+                <option value="name">Sort by Clan Name</option>
+                <option value="members">Sort by Online Players</option>
+                <option value="created">Sort by Creation Date</option>
+
+            </select>
+        </div>
+
+        <table id="clansTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('name')">Clan Name</th>
+                    <th onclick="sortTable('created')">Created</th>
+                    <th onclick="sortTable('members')">Online</th>
+                </tr>
+            </thead>
+            <tbody id="clansTableBody">
+                <tr>
+                    <td colspan="6" style="padding: 40px;">
+                        <div class="loading" style="margin: 0 auto;"></div>
+                        <div style="margin-top: 15px;">Loading clans...</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let allClans = [];
+        let currentSort = { column: 'name', direction: 'asc' };
+        let filteredAndSortedClans = [];
+
+        // Page navigation
+        function navigateToPage(url) {
+            document.body.style.transform = 'translateX(-100%)';
+            document.body.style.transition = 'transform 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 250);
+        }
+
+        // Load clans data
+        async function loadClans() {
+            try {
+                const response = await fetch('https://api.status.tw/clan/list');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rawData = await response.json();
+                
+                // Process the clan data to add calculated fields
+                allClans = rawData.map(clan => {
+                    const onlinePlayers = clan.players.filter(player => player.server).length;
+                    const afkPlayers = clan.players.filter(player => player.isAfk).length;
+                    
+                    return {
+                        ...clan,
+                        onlinePlayers,
+                        afkPlayers,
+
+                        memberCount: clan.players.length
+                    };
+                });
+                
+                applyFiltersAndSort();
+            } catch (error) {
+                console.error('Error loading clans:', error);
+                document.getElementById('clansTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6" style="color: #ff4444; padding: 40px;">
+                            Error loading clans. Please try again later.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Display clans in table
+        function displayClans(clans) {
+            const tbody = document.getElementById('clansTableBody');
+            tbody.innerHTML = '';
+
+            if (clans.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 40px; color: rgba(255, 255, 255, 0.6);">
+                            No clans found matching your criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            clans.forEach((clan, index) => {
+                const row = document.createElement('tr');
+                row.className = 'clan-row';
+                row.onclick = () => toggleClanDetails(index);
+                
+                const statusBadges = [];
+                if (clan.onlinePlayers > 0) statusBadges.push(`<span class="stat-badge">${clan.onlinePlayers} Online</span>`);
+                if (clan.afkPlayers > 0) statusBadges.push(`<span class="stat-badge" style="background: #FF9800;">${clan.afkPlayers} AFK</span>`);
+                
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${clan.name}</td>
+
+
+                    <td>${formatDate(clan.createdAt)}</td>
+                    <td>
+                        <div class="clan-stats-badges">
+                            ${statusBadges.join('') || '<span style="color: rgba(255,255,255,0.5);">Offline</span>'}
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+                let createDate = formatDate(clan.createdAt);
+                if (createDate === "Jun 1, 2024") {
+                    createDate = "Jun 1, 2024 (not accurate)";
+                }
+                // Create details row
+                const detailsRow = document.createElement('tr');
+                detailsRow.className = 'clan-details';
+                detailsRow.id = `details-${index}`;
+                detailsRow.innerHTML = `
+                    <td colspan="6">
+                        <div class="clan-content">
+                            <div class="clan-info">
+                                <div class="info-item">
+                                    <span class="info-label">Clan Name:</span>
+                                    <span class="info-value">${clan.name}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Online Players:</span>
+                                    <span class="info-value">${clan.onlinePlayers}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">AFK Players:</span>
+                                    <span class="info-value">${clan.afkPlayers}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Created:</span>
+                                    <span class="info-value">${createDate}</span>
+                                </div>
+                            </div>
+                            <div class="players-container">
+                                <h4 style="color: var(--primary-color); margin-bottom: 15px;">Clan Members (${clan.memberCount})</h4>
+                                <div class="players-grid">
+                                    ${generatePlayersGrid(clan.players)}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(detailsRow);
+            });
+        }
+
+        // Generate players grid
+        function generatePlayersGrid(players) {
+            if (players.length === 0) {
+                return '<div class="empty-state">No players in this clan</div>';
+            }
+
+            return players.map(player => {
+                const statusBadges = [];
+                if (player.server) {
+                    statusBadges.push('<span class="status-badge status-online">Online</span>');
+                    if (player.isAfk) {
+                        statusBadges.push('<span class="status-badge status-afk">AFK</span>');
+                    }
+                } else {
+                    statusBadges.push('<span class="status-badge status-offline">Offline</span>');
+                }
+                
+                const serverInfo = player.server ? `
+                    <div class="server-info">
+                        <strong>Server:</strong> ${player.server.name}<br>
+                        <strong>Ip:</strong> ${player.server.ip}:${player.server.port}<br>
+                        <strong>Map:</strong> ${player.server.map?.name || 'Unknown'}<br>
+                        <strong>Players:</strong> ${player.server.numPlayers}/${player.server.maxPlayers}
+                    </div>
+                ` : '';
+
+const countryName = COUNTRY_CODES[player.country?.code] || player.country?.code;
+                const regionNames = new Intl.DisplayNames(
+                    ['en'], {type: 'region'}
+                );
+                let countryNamey; 
+                try{
+                    
+                    countryNamey = countryName?.toLowerCase() === "default"
+                     ? "Default"
+                     : regionNames.of(countryName);
+                }
+                catch (e) {
+                    
+                    countryNamey = countryName;
+                }
+                
+
+                return `
+                    <div class="player-card" onclick="copyToClipboard('${player.name}')">
+                        <div class="player-header">
+                            <span class="player-name">${player.name}</span>
+                            ${player.country?.iconUrl ? `<img src="${player.country.iconUrl}" alt="${player.country.code}" class="country-flag">` : ''}
+                        </div>
+                        <div class="player-status">
+                            ${statusBadges.join('')}
+                        </div>
+                        <div class="player-info">
+
+                            <strong>Country:</strong> ${countryNamey}<br>
+                            <strong>Joined:</strong> ${formatDateShort(player.createdAt)}
+                            ${serverInfo}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle clan details
+        function toggleClanDetails(index) {
+            const detailsRow = document.getElementById(`details-${index}`);
+            const clanRow = document.querySelectorAll('.clan-row')[index];
+            
+            if (detailsRow.classList.contains('show')) {
+                detailsRow.classList.remove('show');
+                clanRow.classList.remove('expanded');
+            } else {
+                // Close other expanded rows
+                document.querySelectorAll('.clan-details.show').forEach(row => {
+                    row.classList.remove('show');
+                });
+                document.querySelectorAll('.clan-row.expanded').forEach(row => {
+                    row.classList.remove('expanded');
+                });
+                
+                detailsRow.classList.add('show');
+                clanRow.classList.add('expanded');
+            }
+        }
+
+        // Combined filtering and sorting logic
+        function applyFiltersAndSort() {
+            const searchTerm = document.getElementById('clanSearch').value.toLowerCase();
+            const sortBy = document.getElementById('sortBy').value;
+
+            filteredAndSortedClans = allClans.filter(clan => {
+                const matchesSearch = clan.name.toLowerCase().includes(searchTerm) || 
+                                      clan.players.some(player => player.name.toLowerCase().includes(searchTerm));
+                
+                let matchesStatus = true;
+                
+                return matchesSearch && matchesStatus;
+            });
+
+            // Apply sorting
+            filteredAndSortedClans.sort((a, b) => {
+                let aVal, bVal;
+
+                switch (sortBy) {
+                    case 'name':
+                        aVal = a.name;
+                        bVal = b.name;
+                        break;
+                    case 'members': // This case doesn't exist in your HTML, should be 'online' or 'created'
+                        aVal = a.memberCount;
+                        bVal = b.memberCount;
+                        break;
+                    case 'online':
+                        aVal = a.onlinePlayers; // Correctly gets the value
+                        bVal = b.onlinePlayers; // Correctly gets the value
+                        break;
+                    case 'created':
+                        aVal = new Date(a.createdAt);
+                        bVal = new Date(b.createdAt);
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (typeof aVal === 'string') {
+                    return aVal.localeCompare(bVal) * (currentSort.direction === 'asc' ? 1 : -1);
+                } else {
+                    // This is where the issue lies for numerical and date sorting
+                    return (aVal - bVal) * (currentSort.direction === 'asc' ? 1 : -1);
+                }
+            });
+
+            displayClans(filteredAndSortedClans);
+        }
+
+        // Sort table
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            document.getElementById('sortBy').value = column;
+            applyFiltersAndSort();
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const tooltip = document.createElement('div');
+                tooltip.textContent = 'Player name copied!';
+                tooltip.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: var(--primary-color);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    z-index: 10000;
+                    font-weight: 600;
+                `;
+                document.body.appendChild(tooltip);
+                setTimeout(() => tooltip.remove(), 1500);
+            });
+        }
+
+        // Helper functions
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatDateShort(timestamp) {
+            if (!timestamp) return 'Unknown';
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 30) {
+                return `${diffDays}d ago`;
+            } else if (diffDays < 365) {
+                return `${Math.floor(diffDays / 30)}mo ago`;
+            } else {
+                return `${Math.floor(diffDays / 365)}y ago`;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('clanSearch').addEventListener('input', applyFiltersAndSort);
+        document.getElementById('sortBy').addEventListener('change', function() {
+            currentSort.column = this.value;
+            currentSort.direction = 'asc';
+            applyFiltersAndSort();
+        });
+        
+
+        // Navigation button functionality
+        document.getElementById('servers').addEventListener('click', () => {
+            console.log('Navigate to Servers');
+        });
+
+        // Page load animation
+        window.addEventListener('load', () => {
+            document.body.classList.add('page-transition');
+            loadClans();
+        });
+
+        // Page transition from other pages
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                document.body.style.transform = 'translateX(0)';
+                document.body.style.transition = 'transform 0.5s ease-in-out';
+            }
+        });
+    </script>
+</body>
+</html>
