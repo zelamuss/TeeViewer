@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+	<link rel='icon' type='image/png' sizes='96x96' href='favicon/favicon-96x.png'>
+	<link rel='icon' type='image/png' sizes='32x32' href='favicon/favicon-32x.png'>
+	<link rel='icon' type='image/png' sizes='16x16' href='favicon/favicon-16x.png'>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Players - TeeViewer</title>
@@ -1091,25 +1096,29 @@
             const card = document.createElement('div');
             card.className = 'comparison-player-card';
 
-            const profile = playerData.recent_player_info[0];
+            const profile = playerData;
             let totalSecondsPlayed = 0;
             if (playerData.finishes) {
                 playerData.finishes.forEach(finish => {
                     totalSecondsPlayed += finish.seconds_played || 0;
                 });
-            }
+            }               
+            const regionNames = new Intl.DisplayNames(
 
-            const countryCode = profile.country !== undefined && profile.country !== null ? profile.country.toString() : "-1";
-            const countryName = COUNTRY_CODES[countryCode] || "Unknown";
-            const flagHtml = (countryName !== "Unknown" && countryName !== "default")
-                ? `<img src="countryFlags/${countryName}.png" class="country-flag" alt="country flag" style="display:inline-block;">`
-                : '';
+                ['en'], {type: 'region'}
+
+            );
+
+            const countryCode = profile.recent_player_info[0].country !== undefined && profile.recent_player_info[0].country !== null ? profile.recent_player_info[0].country.toString() : "-1";
+            const countryNamey = COUNTRY_CODES[countryCode] || "Unknown";
+
+            const countryName = countryNamey === "default" ? "Default" : regionNames.of(countryNamey);
 
             card.innerHTML = `
-                <h3>${profile.name || 'N/A'}</h3>
-                <p>Points: <span>${profile.points || 0}</span></p>
-                <p>Clan: <span>${profile.clan || 'N/A'}</span></p>
-                <p class="country-display">Country: <span>${countryName}</span> ${flagHtml}</p>
+                <h3>${profile.profile.name || 'N/A'}</h3>
+                <p>Points: <span>${profile.profile.points || 0}</span></p>
+                <p>Clan: <span>${profile.recent_player_info[0].clan || 'N/A'}</span></p>
+                <p class="country-display">Country: <span>${countryName}</span></p>
                 <p>Total Finishes: <span>${playerData.finishes ? playerData.finishes.length : 0}</span></p>
                 <p>Total Time Played: <span>${formatTime(totalSecondsPlayed)}</span></p>
                 <p>Is Mapper: <span>${playerData.is_mapper ? 'Yes' : 'No'}</span></p>
