@@ -16,7 +16,129 @@
     <script src="TeeAssembler/js/TeeAssembler.js"></script>
        <style>
         /* General styling for player search and display */
-        
+        .pie-charts-section, .completion-progress-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .pie-charts-section h2, .completion-progress-section h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .pie-charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pie-chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .pie-chart-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .pie-chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        .completion-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .completion-table th {
+            text-align: center;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--primary-color);
+        }
+
+        .completion-table td {
+            text-align: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--primary-color);
+        }
+
+        .completion-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #ff6b35);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .total-completion {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .total-completion h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .total-progress-bar-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            height: 30px;
+            margin-top: 10px;
+        }
+
+        .total-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
         .player-search-container {
             max-width: 800px;
             margin: 20px auto;
@@ -377,9 +499,9 @@
         <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
         <div class="nav-buttons">
             <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
-            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button class="categories" id="clans">Clans</button>
             <button onclick="navigateToPage('maps.html')" class="categories" id="maps">Maps</button>
-            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
+            <button class="categories" id="servers">Servers</button>
         </div>
     </div>
 
@@ -426,6 +548,10 @@
                 <div class="label">Total Time Played</div>
             </div>
             <div class="stat-card">
+                <div class="value" id="lastSeen"></div>
+                <div class="label">Last Seen</div>
+            </div>
+            <div class="stat-card">
                 <div class="value" id="playerStartPlaytime"></div>
                 <div class="label">Started Playing</div>
             </div>
@@ -451,6 +577,51 @@
                 <canvas id="pointsChart"></canvas>
             </div>
         </div>
+                <div class="pie-charts-section">
+        <h2>Playing Statistics</h2>
+        <div class="pie-charts-container">
+            <div class="pie-chart-card">
+                <h3>Most Played Categories</h3>
+                <div class="pie-chart-container">
+                    <canvas id="categoriesChart"></canvas>
+                </div>
+            </div>
+            <div class="pie-chart-card">
+                <h3>Most Played Locations</h3>
+                <div class="pie-chart-container">
+                    <canvas id="locationsChart"></canvas>
+                </div>
+            </div>
+            <div class="pie-chart-card">
+                <h3>Most Played Gametypes</h3>
+                <div class="pie-chart-container">
+                    <canvas id="gametypesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="completion-progress-section">
+        <h2>Completion Progress</h2>
+        <div class="total-completion">
+            <h3>Total Completion</h3>
+            <p id="totalCompletionText">0 / 0 maps completed (0%)</p>
+            <div class="total-progress-bar-container">
+                <div id="totalProgressBar" class="total-progress-bar" style="width: 0%;">0%</div>
+            </div>
+        </div>
+        <table class="completion-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Progress</th>
+                    <th>Maps Completed</th>
+                    <th>Completion %</th>
+                </tr>
+            </thead>
+            <tbody id="completionProgressTableBody">
+            </tbody>
+        </table>
+    </div>
 
         <div class="most-played-maps-section">
             <h2>Most Played Maps (by Total Time)</h2>
@@ -466,7 +637,7 @@
                 </tbody>
             </table>
         </div>
-
+        
         <div class="recent-finishes">
             <h2>Recent Finishes</h2>
             <table class="finishes-table">
@@ -484,6 +655,9 @@
                 </tbody>
             </table>
         </div>
+
+
+
 
 
 
@@ -517,7 +691,232 @@
     <script src="./country_codes.js"></script>
     <script>
         // Define COUNTRY_CODES
+        let categoriesChartInstance = null;
+        let locationsChartInstance = null;
+        let gametypesChartInstance = null;
 
+        // Add this function to your existing displayPlayerData function, after the points chart rendering
+        function renderPieCharts(playerData) {
+            // Destroy existing chart instances
+            if (categoriesChartInstance) {
+                categoriesChartInstance.destroy();
+                categoriesChartInstance = null;
+            }
+            if (locationsChartInstance) {
+                locationsChartInstance.destroy();
+                locationsChartInstance = null;
+            }
+            if (gametypesChartInstance) {
+                gametypesChartInstance.destroy();
+                gametypesChartInstance = null;
+            }
+
+            // Generate colors for pie charts
+            const generateColors = (count) => {
+                const colors = [];
+                const baseColors = [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#C7CBCF', '#FF6384', '#36A2EB', '#FFCE56'
+                ];
+                for (let i = 0; i < count; i++) {
+                    colors.push(baseColors[i % baseColors.length]);
+                }
+                return colors;
+            };
+
+            // Most Played Categories Chart
+            const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+            if (playerData.most_played_categories && playerData.most_played_categories.length > 0) {
+                const categoriesData = playerData.most_played_categories.slice(0, 8); // Top 8
+                categoriesChartInstance = new Chart(categoriesCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: categoriesData.map(item => item.key),
+                        datasets: [{
+                            data: categoriesData.map(item => Math.round(item.seconds_played / 3600)), // Convert to hours
+                            backgroundColor: generateColors(categoriesData.length),
+                            borderWidth: 2,
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: 'white',
+                                    padding: 15,
+                                    fontSize: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const hours = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((hours / total) * 100).toFixed(1);
+                                        return `${context.label}: ${hours}h (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                categoriesCtx.clearRect(0, 0, categoriesCtx.canvas.width, categoriesCtx.canvas.height);
+                categoriesCtx.font = "16px 'SF Pro Rounded'";
+                categoriesCtx.fillStyle = 'white';
+                categoriesCtx.textAlign = 'center';
+                categoriesCtx.fillText('No categories data available.', categoriesCtx.canvas.width / 2, categoriesCtx.canvas.height / 2);
+            }
+
+            // Most Played Locations Chart
+            const locationsCtx = document.getElementById('locationsChart').getContext('2d');
+            if (playerData.most_played_locations && playerData.most_played_locations.length > 0) {
+                const locationsData = playerData.most_played_locations.slice(0, 8); // Top 8
+                locationsChartInstance = new Chart(locationsCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: locationsData.map(item => item.key),
+                        datasets: [{
+                            data: locationsData.map(item => Math.round(item.seconds_played / 3600)), // Convert to hours
+                            backgroundColor: generateColors(locationsData.length),
+                            borderWidth: 2,
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: 'white',
+                                    padding: 15,
+                                    fontSize: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const hours = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((hours / total) * 100).toFixed(1);
+                                        return `${context.label}: ${hours}h (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                locationsCtx.clearRect(0, 0, locationsCtx.canvas.width, locationsCtx.canvas.height);
+                locationsCtx.font = "16px 'SF Pro Rounded'";
+                locationsCtx.fillStyle = 'white';
+                locationsCtx.textAlign = 'center';
+                locationsCtx.fillText('No locations data available.', locationsCtx.canvas.width / 2, locationsCtx.canvas.height / 2);
+            }
+
+            // Most Played Gametypes Chart
+            const gametypesCtx = document.getElementById('gametypesChart').getContext('2d');
+            if (playerData.most_played_gametypes && playerData.most_played_gametypes.length > 0) {
+                const gametypesData = playerData.most_played_gametypes.slice(0, 8); // Top 8
+                gametypesChartInstance = new Chart(gametypesCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: gametypesData.map(item => item.key),
+                        datasets: [{
+                            data: gametypesData.map(item => Math.round(item.seconds_played / 3600)), // Convert to hours
+                            backgroundColor: generateColors(gametypesData.length),
+                            borderWidth: 2,
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: 'white',
+                                    padding: 15,
+                                    fontSize: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const hours = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((hours / total) * 100).toFixed(1);
+                                        return `${context.label}: ${hours}h (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                gametypesCtx.clearRect(0, 0, gametypesCtx.canvas.width, gametypesCtx.canvas.height);
+                gametypesCtx.font = "16px 'SF Pro Rounded'";
+                gametypesCtx.fillStyle = 'white';
+                gametypesCtx.textAlign = 'center';
+                gametypesCtx.fillText('No gametypes data available.', gametypesCtx.canvas.width / 2, gametypesCtx.canvas.height / 2);
+            }
+        }
+
+        function renderCompletionProgress(playerData) {
+            const completionProgressTableBody = document.getElementById('completionProgressTableBody');
+            completionProgressTableBody.innerHTML = '';
+
+            if (playerData.completion_progress && playerData.completion_progress.length > 0) {
+                let totalMapsFinished = 0;
+                let totalMapsTotal = 0;
+
+                playerData.completion_progress.forEach(category => {
+                    totalMapsFinished += category.maps_finished;
+                    totalMapsTotal += category.maps_total;
+
+                    const percentage = category.maps_total > 0 ? ((category.maps_finished / category.maps_total) * 100).toFixed(1) : 0;
+                    
+                    const row = completionProgressTableBody.insertRow();
+                    row.insertCell().textContent = category.category;
+                    
+                    // Progress bar cell
+                    const progressCell = row.insertCell();
+                    progressCell.innerHTML = `
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${percentage}%;">${percentage}%</div>
+                        </div>
+                    `;
+                    
+                    row.insertCell().textContent = `${category.maps_finished} / ${category.maps_total}`;
+                    row.insertCell().textContent = `${percentage}%`;
+                });
+
+                // Update total completion
+                const totalPercentage = totalMapsTotal > 0 ? ((totalMapsFinished / totalMapsTotal) * 100).toFixed(1) : 0;
+                document.getElementById('totalCompletionText').textContent = `${totalMapsFinished} / ${totalMapsTotal} maps completed (${totalPercentage}%)`;
+                document.getElementById('totalProgressBar').style.width = `${totalPercentage}%`;
+                document.getElementById('totalProgressBar').textContent = `${totalPercentage}%`;
+            } else {
+                const row = completionProgressTableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 4;
+                cell.textContent = "No completion progress data found.";
+                cell.style.textAlign = 'center';
+                cell.style.padding = '20px';
+                
+                // Reset total completion
+                document.getElementById('totalCompletionText').textContent = 'No completion data available';
+                document.getElementById('totalProgressBar').style.width = '0%';
+                document.getElementById('totalProgressBar').textContent = '0%';
+            }
+        }
 
         // Page navigation
         function navigateToPage(url) {
@@ -557,6 +956,18 @@
             document.getElementById('playerComparisonSection').style.display = 'none'; // Hide comparison section
 
             // Destroy existing chart instances before rendering new ones
+            if (categoriesChartInstance) {
+                categoriesChartInstance.destroy();
+                categoriesChartInstance = null;
+            }
+            if (locationsChartInstance) {
+                locationsChartInstance.destroy();
+                locationsChartInstance = null;
+            }
+            if (gametypesChartInstance) {
+                gametypesChartInstance.destroy();
+                gametypesChartInstance = null;
+            }
             if (playtimeChartInstance) {
                 playtimeChartInstance.destroy();
                 playtimeChartInstance = null;
@@ -602,21 +1013,25 @@
         }
 
         function displayPlayerData(playerData) {
-            const profile = playerData.recent_player_info[0];
+            // THIS IS THE NEW OR MODIFIED LINE
+            const profile = playerData.recent_player_info && playerData.recent_player_info.length > 0 ? playerData.recent_player_info[0] : playerData.profile;
+            
             // Removed charAt(0) for playerAvatar, now TeeAssembler will handle it.
             // document.getElementById('playerAvatar').textContent = profile.name ? profile.name.charAt(0).toUpperCase() : '?';
             const data = playerData;
             console.log(data)
-            const skinbodyColor = data.recent_player_info[0].skin_color_body;
+            console.log(profile)
+            const skinbodyColor = profile.skin_color_body; // Changed from data.recent_player_info[0] to profile
 
-            const skinfeetColor = data.recent_player_info[0].skin_color_feet;
+            const skinfeetColor = profile.skin_color_feet; // Changed from data.recent_player_info[0] to profile
 
-            const skinName = data.recent_player_info[0].skin_name;
+            const skinName = profile.skin_name || 'default'; // Changed from data.recent_player_info[0] to profile
 
             const effectiveBodyColor = skinbodyColor !== null ? skinbodyColor.toString() : '';
 
             const effectiveFeetColor = skinfeetColor !== null ? skinfeetColor.toString() : '';
-
+            renderPieCharts(playerData);
+            renderCompletionProgress(playerData);
             let myTee;
             console.log(effectiveBodyColor);
 
@@ -739,6 +1154,7 @@
                 });
             }
             document.getElementById('totalSecondsPlayed').textContent = formatTime(totalSecondsPlayed);
+            document.getElementById('lastSeen').textContent = profile.last_seen ? new Date(profile.last_seen).toLocaleDateString() : 'N/A';
             document.getElementById('playerStartPlaytime').textContent = earliestFinishDate ? earliestFinishDate.toLocaleDateString() : 'N/A';
 
             // Display Most Played Maps
@@ -1171,7 +1587,7 @@
                 playerSearchInput.value = playerNameFromUrl;
                 searchPlayer();
             } else {
-                playerSearchInput.value = 'Zelamus'; // Default player if no URL param
+                playerSearchInput.value = ''; // Default player if no URL param
                 searchPlayer();
             }
         });
