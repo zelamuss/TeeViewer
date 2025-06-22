@@ -1010,7 +1010,7 @@
                             // Display AFK indicator if client.afk is true
                             const afkIndicator = client.afk ? '<span style="color: grey; font-size: 0.8em; margin-right: 5px;" title="AFK">😴</span>' : '';
                             const playerNameLink = `<a href="players.html?player=${encodeURIComponent(client.name)}" onclick="event.stopPropagation();" style="color: inherit; text-decoration: underline;">${afkIndicator}${client.name}</a>`;
-                            const clanNameLink = client.clan ? `<a href="clans.html?clan=${encodeURIComponent(client.clan.name)}" onclick="event.stopPropagation();" style="color: inherit; text-decoration: underline;">${client.clan.name}</a>` : 'N/A';
+                            const clanNameLink = client.clan ? `<a href="clans.html?clanName=${encodeURIComponent(client.clan.name)}" onclick="event.stopPropagation();" style="color: inherit; text-decoration: underline;">${client.clan.name}</a>` : 'N/A';
 
                             clientsHtml += `
                                 <tr>
