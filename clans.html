@@ -350,9 +350,9 @@
         <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
         <div class="nav-buttons">
             <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
-            <button onclick="navigateToPage('clans')" class="categories" id="clans">Clans</button>
-            <button onclick="navigateToPage('maps.html')" class="categories" id="maps">Maps</button>
-            <button onclick="navigateToPage('servers.html')" class="categories" id="servers">Servers</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
         </div>
     </div>
 
@@ -395,6 +395,7 @@
         let allClans = [];
         let currentSort = { column: 'name', direction: 'asc' };
         let filteredAndSortedClans = [];
+        let clanToExpand = null; // New variable to store clan name from URL
 
         // Page navigation
         function navigateToPage(url) {
@@ -430,6 +431,16 @@
                 });
                 
                 applyFiltersAndSort();
+
+                // After clans are displayed, check for clanToExpand
+                if (clanToExpand) {
+                    const index = filteredAndSortedClans.findIndex(clan => clan.name.toLowerCase() === clanToExpand.toLowerCase());
+                    if (index !== -1) {
+                        toggleClanDetails(index);
+                    }
+                    clanToExpand = null; // Reset after use
+                }
+
             } catch (error) {
                 console.error('Error loading clans:', error);
                 document.getElementById('clansTableBody').innerHTML = `
@@ -579,6 +590,7 @@ const countryName = COUNTRY_CODES[player.country?.code] || player.country?.code;
 
                             <strong>Country:</strong> ${countryNamey}<br>
                             <strong>Joined:</strong> ${formatDateShort(player.createdAt)}
+                            <strong>Playtime:</strong> ${formatDateShort(player.createdAt)}
                             ${serverInfo}
                         </div>
                     </div>
@@ -733,9 +745,18 @@ const countryName = COUNTRY_CODES[player.country?.code] || player.country?.code;
             console.log('Navigate to Servers');
         });
 
-        // Page load animation
+        // Page load animation and URL parameter handling
         window.addEventListener('load', () => {
             document.body.classList.add('page-transition');
+            
+            // Parse URL for clan parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const clanParam = urlParams.get('clanName');
+            if (clanParam) {
+                document.getElementById('clanSearch').value = clanParam;
+                clanToExpand = clanParam; // Store the clan name to expand after data loads
+            }
+
             loadClans();
         });
 
