@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Players - TeeViewer</title>
@@ -14,9 +11,75 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
     <script src="TeeAssembler/js/color.js"></script>
     <script src="TeeAssembler/js/TeeAssembler.js"></script>
-       <style>
-        /* General styling for player search and display */
-        .pie-charts-section, .completion-progress-section {
+    <style>
+        #onlineStatusSection {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px; /* Added margin for separation */
+        text-align: center;
+        color: var(--text-color);
+
+            
+        margin-bottom: 20px;
+        font-size: 1em;
+    }
+
+    #onlineStatusSection h3 {
+        color: var(--primary-color);
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+
+    #onlineStatusSection h4 {
+        color: var(--primary-color);
+        font-size: 1.2em;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #onlineStatusSection p {
+        color: var(--text-color);
+        margin-bottom: 5px;
+        font-size: 1em;
+    }
+
+    #onlineStatusSection strong {
+        color: var(--primary-color);
+    }
+
+    #onlineStatusSection button {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        margin: 10px 5px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #onlineStatusSection button:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-1px);
+    }
+
+        /* Unified styling for all main content sections */
+        .pie-charts-section,
+        .completion-progress-section,
+        .recent-top-10s-section,
+        .rank-distribution-section,
+        .all-top-10s-section,
+        .recent-finishes,
+        .unfinished-maps,
+        .additional-details,
+        .favourite-teammates-section,
+        .most-played-maps-section,
+        .playtime-graph-section,
+        .points-graph-section {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
@@ -24,8 +87,85 @@
             padding: 30px;
             margin-bottom: 30px;
             text-align: center;
+            color: var(--text-color);
         }
 
+        /* Unified styling for all section headers */
+        .recent-top-10s-section h2,
+        .rank-distribution-section h2,
+        .all-top-10s-section h2,
+        .recent-finishes h2,
+        .unfinished-maps h2,
+        .additional-details h2,
+        .favourite-teammates-section h2,
+        .most-played-maps-section h2,
+        .playtime-graph-section h2,
+        .points-graph-section h2,
+        .pie-charts-section h2,
+        .completion-progress-section h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .most-played-maps-section h3{
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            flex-grow: 1;
+        }
+
+        .top-ranks-section .button,
+        .all-top-10s-section .button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 25px;
+            transition: background-color 0.3s ease;
+            align-self: center;
+        }
+
+        .top-ranks-section .button:hover,
+        .all-top-10s-section .button:hover {
+            background-color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                max-height: 300px;
+            }
+        }
         .pie-charts-section h2, .completion-progress-section h2 {
             text-align: center;
             color: var(--primary-color);
@@ -146,7 +286,6 @@
             text-align: center;
         }
 
-
         .search-area {
             display: flex;
             justify-content: center;
@@ -175,20 +314,18 @@
             box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
         }
 
-
-
         .loading-indicator {
             color: var(--primary-color);
             font-size: 1.1em;
             margin-top: 20px;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         .error-message {
             color: #e74c3c;
             font-size: 1.1em;
             margin-top: 20px;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         .player-container {
@@ -196,7 +333,7 @@
             margin: 20px auto;
             padding: 0 20px;
             color: var(--primary-color);
-            display: none; /* Hidden by default, shown when player data is loaded */
+            display: none;
         }
 
         .player-profile {
@@ -211,30 +348,28 @@
             gap: 30px;
             flex-wrap: wrap;
             text-align: center;
-            position: relative; /* For share button positioning */
+            position: relative;
         }
 
         .player-avatar {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            /* background-color: var(--primary-color); /* Placeholder removed, TeeAssembler will render here */
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 4em;
             color: white;
             text-transform: uppercase;
-            flex-shrink: 0; /* Prevent shrinking */
-            overflow: hidden; /* Ensure tee stays within circle */
+            flex-shrink: 0;
+            overflow: hidden;
         }
         
-        /* Style for the TeeAssembler canvas */
         .player-avatar canvas {
             width: 100%;
             height: 100%;
-            border-radius: 50%; /* Make the canvas circular */
-            object-fit: cover; /* Cover the area within the circle */
+            border-radius: 50%;
+            object-fit: cover;
         }
         .player-info {
             justify-content: center;
@@ -309,23 +444,6 @@
             color: var(--primary-color);
         }
 
-        .recent-finishes, .unfinished-maps, .additional-details, .favourite-teammates-section, .most-played-maps-section, .playtime-graph-section, .points-graph-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .recent-finishes h2, .unfinished-maps h2, .additional-details h2, .favourite-teammates-section h2, .most-played-maps-section h2, .playtime-graph-section h2, .points-graph-section h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
         .finishes-table, .unfinished-table, .teammates-table, .most-played-table {
             width: 100%;
             border-collapse: collapse;
@@ -364,18 +482,16 @@
 
         .graph-container {
             position: relative;
-            height: 400px; /* Adjust height as needed */
+            height: 400px;
             width: 100%;
             margin-bottom: 20px;
         }
         
-        /* Graph text color change to white */
         .playtime-graph-section canvas,
         .points-graph-section canvas {
-            color: white; /* This sets the canvas default text color, Chart.js overrides specific elements */
+            color: white;
         }
 
-        /* New styling for player search title */
         .player-search-container h2 {
             font-size: 2em;
             color: var(--primary-color);
@@ -386,7 +502,7 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: #28a745; /* Green color for share */
+            background-color: #28a745;
             color: white;
             border: none;
             border-radius: 8px;
@@ -409,7 +525,7 @@
             padding: 30px;
             margin: 20px auto;
             max-width: 1200px;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         .player-comparison-section h2 {
@@ -458,7 +574,6 @@
             color: var(--primary-color);
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .player-profile {
                 flex-direction: column;
@@ -498,10 +613,10 @@
     <div class="topbar">
         <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
         <div class="nav-buttons">
-            <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
-            <button onclick="navigateToPage('clans')" class="categories" id="clans">Clans</button>
-            <button onclick="navigateToPage('maps.html')" class="categories" id="maps">Maps</button>
-            <button onclick="navigateToPage('servers.html')" class="categories" id="servers">Servers</button>
+<button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
         </div>
     </div>
 
@@ -556,7 +671,18 @@
                 <div class="label">Started Playing</div>
             </div>
         </div>
-
+        <div id="onlineStatusSection" style="margin-top: 20px;">
+            <h3>Online Status: <span id="onlineStatus">Loading...</span></h3>
+            <div id="serverDetails" style="display: none;">
+                <h4>Current Server:</h4>
+                <p><strong>Name:</strong> <span id="serverName"></span></p>
+                <p><strong>Map:</strong> <span id="serverMap"></span></p>
+                <p><strong>Game Type:</strong> <span id="gameType"></span></p>
+                <p><strong>Version:</strong> <span id="serverVersion"></span></p>
+                <button id="serversTabButton">Servers Tab</button>
+                <button id="copyServerInfoButton">Copy server info</button>
+            </div>
+        </div>
         <div class="additional-details">
             <h2>Additional Details</h2>
             <p>Is Mapper: <span id="isMapper"></span></p>
@@ -577,51 +703,51 @@
                 <canvas id="pointsChart"></canvas>
             </div>
         </div>
-                <div class="pie-charts-section">
-        <h2>Playing Statistics</h2>
-        <div class="pie-charts-container">
-            <div class="pie-chart-card">
-                <h3>Most Played Categories</h3>
-                <div class="pie-chart-container">
-                    <canvas id="categoriesChart"></canvas>
+        <div class="pie-charts-section">
+            <h2>Playing Statistics</h2>
+            <div class="pie-charts-container">
+                <div class="pie-chart-card">
+                    <h3>Most Played Categories</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="categoriesChart"></canvas>
+                    </div>
                 </div>
-            </div>
-            <div class="pie-chart-card">
-                <h3>Most Played Locations</h3>
-                <div class="pie-chart-container">
-                    <canvas id="locationsChart"></canvas>
+                <div class="pie-chart-card">
+                    <h3>Most Played Locations</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="locationsChart"></canvas>
+                    </div>
                 </div>
-            </div>
-            <div class="pie-chart-card">
-                <h3>Most Played Gametypes</h3>
-                <div class="pie-chart-container">
-                    <canvas id="gametypesChart"></canvas>
+                <div class="pie-chart-card">
+                    <h3>Most Played Gametypes</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="gametypesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
         <div class="completion-progress-section">
-        <h2>Completion Progress</h2>
-        <div class="total-completion">
-            <h3>Total Completion</h3>
-            <p id="totalCompletionText">0 / 0 maps completed (0%)</p>
-            <div class="total-progress-bar-container">
-                <div id="totalProgressBar" class="total-progress-bar" style="width: 0%;">0%</div>
+            <h2>Completion Progress</h2>
+            <div class="total-completion">
+                <h3>Total Completion</h3>
+                <p id="totalCompletionText">0 / 0 maps completed (0%)</p>
+                <div class="total-progress-bar-container">
+                    <div id="totalProgressBar" class="total-progress-bar" style="width: 0%;">0%</div>
+                </div>
             </div>
+            <table class="completion-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Progress</th>
+                        <th>Maps Completed</th>
+                        <th>Completion %</th>
+                    </tr>
+                </thead>
+                <tbody id="completionProgressTableBody">
+                </tbody>
+            </table>
         </div>
-        <table class="completion-table">
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th>Progress</th>
-                    <th>Maps Completed</th>
-                    <th>Completion %</th>
-                </tr>
-            </thead>
-            <tbody id="completionProgressTableBody">
-            </tbody>
-        </table>
-    </div>
 
         <div class="most-played-maps-section">
             <h2>Most Played Maps (by Total Time)</h2>
@@ -656,10 +782,61 @@
             </table>
         </div>
 
+        <div class="recent-top-10s-section">
+            <h2>Recent Top 10s</h2>
+            <div class="table-container">
+                <table id="recentTop10sTable" class="finishes-table">
+                    <thead>
+                        <tr>
+                            <th>Rank Type</th>
+                            <th>Map</th>
+                            <th>Rank</th>
+                            <th>Time (s)</th>
+                            <th>Server</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
+        <div class="rank-distribution-section">
+            <h2>Rank Distribution (Recent)</h2>
+            <div class="table-container">
+                <table id="rankDistributionTable" class="finishes-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-
-
+        <div class="all-top-10s-section">
+            <h2>All Top 10s</h2>
+            <div class="table-container">
+                <table id="allTop10sTable" class="finishes-table">
+                    <thead>
+                        <tr>
+                            <th>Map</th>
+                            <th>Rank</th>
+                            <th>Time (s)</th>
+                            <th>Server</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
 
         <div class="favourite-teammates-section">
             <h2>Favourite Teammates</h2>
@@ -676,6 +853,7 @@
         </div>
     </div>
 
+
     <div class="player-comparison-section" id="playerComparisonSection">
         <h2>Compare Players</h2>
         <div class="comparison-search-area">
@@ -690,14 +868,437 @@
 
     <script src="./country_codes.js"></script>
     <script>
-        // Define COUNTRY_CODES
+        // Function to fetch and display online data
+    async function fetchOnlineData(playerName) {
+        const onlineStatusElement = document.getElementById('onlineStatus');
+        const serverDetailsElement = document.getElementById('serverDetails');
+        const serverNameElement = document.getElementById('serverName');
+        const serverMapElement = document.getElementById('serverMap');
+        const gameTypeElement = document.getElementById('gameType');
+        const serverVersionElement = document.getElementById('serverVersion');
+        const serversTabButton = document.getElementById('serversTabButton');
+        const copyServerInfoButton = document.getElementById('copyServerInfoButton');
+
+        // Reset display
+        onlineStatusElement.textContent = 'Loading...';
+        serverDetailsElement.style.display = 'none';
+        serversTabButton.onclick = null;
+        copyServerInfoButton.onclick = null;
+
+        try {
+            const response = await fetch(`https://api.status.tw/player/name/${playerName}`);
+            const data = await response.json();
+
+            if (data.players && data.players.length > 0) {
+                const player = data.players[0];
+                const server = player.server;
+
+                onlineStatusElement.textContent = 'Online';
+                onlineStatusElement.style.color = 'green';
+                serverDetailsElement.style.display = 'block';
+
+                serverNameElement.textContent = server.name;
+                serverMapElement.textContent = server.map.name;
+                gameTypeElement.textContent = server.gameType.name;
+                serverVersionElement.textContent = server.version.version;
+
+                const serverIp = server.ip;
+                const serverPort = server.port;
+
+                serversTabButton.onclick = () => {
+                    window.location.href = `servers.html?ip=${serverIp}&port=${serverPort}`;
+                };
+
+                copyServerInfoButton.onclick = async () => {
+                    const serverInfo = `${serverIp}:${serverPort}`;
+                    try {
+                        await navigator.clipboard.writeText(serverInfo);
+                        showCustomModal('Copied to clipboard: ' + serverInfo);
+                    } catch (err) {
+                        console.error('Failed to copy: ', err);
+                        showCustomModal('Failed to copy server info.');
+                    }
+                };
+            } else {
+                onlineStatusElement.textContent = 'Offline';
+                onlineStatusElement.style.color = 'red';
+                serverDetailsElement.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error fetching online data:', error);
+            onlineStatusElement.textContent = 'Error fetching data.';
+            onlineStatusElement.style.color = 'orange';
+            serverDetailsElement.style.display = 'none';
+        }
+    }
+
+    // Assuming you have a searchPlayer function, call fetchOnlineData after a successful player search
+    // For example, if your searchPlayer function looks like this:
+    /*
+    function searchPlayer() {
+        const playerName = playerSearchInput.value.trim();
+        if (playerName) {
+            // Your existing player search logic here
+            // ...
+
+            // Call the new function to get online data
+            fetchOnlineData(playerName);
+        }
+    }
+    */
+
+    // Make sure to call `fetchOnlineData` whenever a player search is performed
+    // For instance, if you have a `searchPlayer` function that gets triggered when the player name is entered or a search button is clicked:
+
+    // Example of how to integrate with your existing searchPlayer logic
+    // Find where your `playerSearchInput` is handled (e.g., in an event listener for 'keypress' or a 'searchPlayer' button click)
+    // And add `fetchOnlineData(playerName);` there.
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const playerSearchInput = document.getElementById('playerSearchInput'); // Assuming this is your main player search input
+        const searchPlayerButton = document.getElementById('searchPlayerButton'); // Assuming you have a search button
+
+        // You likely already have a searchPlayer function. Modify it to include the call to fetchOnlineData.
+        // If your searchPlayer function is defined elsewhere, ensure you pass the player name to fetchOnlineData.
+        if (searchPlayerButton) {
+            searchPlayerButton.addEventListener('click', () => {
+                const playerName = playerSearchInput.value.trim();
+                if (playerName) {
+                    // Call your existing searchPlayer logic here if any
+                    // ...
+                    fetchOnlineData(playerName);
+                }
+            });
+        }
+
+        if (playerSearchInput) {
+            playerSearchInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    const playerName = playerSearchInput.value.trim();
+                    if (playerName) {
+                        // Call your existing searchPlayer logic here if any
+                        // ...
+                        fetchOnlineData(playerName);
+                    }
+                }
+            });
+        }
+
+        // If you have a way to get the player name from the URL on load, also call fetchOnlineData
+        const urlParams = new URLSearchParams(window.location.search);
+        const playerNameFromUrl = urlParams.get('player');
+        if (playerNameFromUrl) {
+            playerSearchInput.value = playerNameFromUrl;
+            fetchOnlineData(playerNameFromUrl); // Call when page loads with a player in URL
+        }
+    });
+
+    // Assuming you have a modal function, if not, you can define a simple one
+    // Function to fetch and display online data
+    async function fetchOnlineData(playerName) {
+        const onlineStatusElement = document.getElementById('onlineStatus');
+        const serverDetailsElement = document.getElementById('serverDetails');
+        const serverNameElement = document.getElementById('serverName');
+        const serverMapElement = document.getElementById('serverMap');
+        const gameTypeElement = document.getElementById('gameType');
+        const serverVersionElement = document.getElementById('serverVersion');
+        const serversTabButton = document.getElementById('serversTabButton');
+        const copyServerInfoButton = document.getElementById('copyServerInfoButton');
+
+        // Reset display
+        onlineStatusElement.textContent = 'Loading...';
+        serverDetailsElement.style.display = 'none';
+        serversTabButton.onclick = null;
+        copyServerInfoButton.onclick = null;
+
+        try {
+            const response = await fetch(`https://api.status.tw/player/name/${playerName}`);
+            const data = await response.json();
+
+            if (data.players && data.players.length > 0) {
+                const player = data.players[0];
+                const server = player.server;
+
+                onlineStatusElement.textContent = 'Online';
+                onlineStatusElement.style.color = 'green';
+                serverDetailsElement.style.display = 'block';
+
+                serverNameElement.textContent = server.name;
+                serverMapElement.textContent = server.map.name;
+                gameTypeElement.textContent = server.gameType.name;
+                serverVersionElement.textContent = server.version.version;
+
+                const serverIp = server.ip;
+                const serverPort = server.port;
+
+                serversTabButton.onclick = () => {
+                    window.location.href = `servers.html?ip=${serverIp}&port=${serverPort}`;
+                };
+
+                copyServerInfoButton.onclick = async () => {
+                    const serverInfo = `${serverIp}:${serverPort}`;
+                    try {
+                        await navigator.clipboard.writeText(serverInfo);
+                        showCustomModal('Copied to clipboard: ' + serverInfo);
+                    } catch (err) {
+                        console.error('Failed to copy: ', err);
+                        showCustomModal('Failed to copy server info.');
+                    }
+                };
+            } else {
+                onlineStatusElement.textContent = 'Offline';
+                onlineStatusElement.style.color = 'red';
+                serverDetailsElement.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error fetching online data:', error);
+            onlineStatusElement.textContent = 'Error fetching data.';
+            onlineStatusElement.style.color = 'orange';
+            serverDetailsElement.style.display = 'none';
+        }
+    }
+
+    // Assuming you have a searchPlayer function, call fetchOnlineData after a successful player search
+    // For example, if your searchPlayer function looks like this:
+    /*
+    function searchPlayer() {
+        const playerName = playerSearchInput.value.trim();
+        if (playerName) {
+            // Your existing player search logic here
+            // ...
+
+            // Call the new function to get online data
+            fetchOnlineData(playerName);
+        }
+    }
+    */
+
+    // Make sure to call `fetchOnlineData` whenever a player search is performed
+    // For instance, if you have a `searchPlayer` function that gets triggered when the player name is entered or a search button is clicked:
+
+    // Example of how to integrate with your existing searchPlayer logic
+    // Find where your `playerSearchInput` is handled (e.g., in an event listener for 'keypress' or a 'searchPlayer' button click)
+    // And add `fetchOnlineData(playerName);` there.
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const playerSearchInput = document.getElementById('playerSearchInput'); // Assuming this is your main player search input
+        const searchPlayerButton = document.getElementById('searchPlayerButton'); // Assuming you have a search button
+
+        // You likely already have a searchPlayer function. Modify it to include the call to fetchOnlineData.
+        // If your searchPlayer function is defined elsewhere, ensure you pass the player name to fetchOnlineData.
+        if (searchPlayerButton) {
+            searchPlayerButton.addEventListener('click', () => {
+                const playerName = playerSearchInput.value.trim();
+                if (playerName) {
+                    // Call your existing searchPlayer logic here if any
+                    // ...
+                    fetchOnlineData(playerName);
+                }
+            });
+        }
+
+        if (playerSearchInput) {
+            playerSearchInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    const playerName = playerSearchInput.value.trim();
+                    if (playerName) {
+                        // Call your existing searchPlayer logic here if any
+                        // ...
+                        fetchOnlineData(playerName);
+                    }
+                }
+            });
+        }
+
+        // If you have a way to get the player name from the URL on load, also call fetchOnlineData
+        const urlParams = new URLSearchParams(window.location.search);
+        const playerNameFromUrl = urlParams.get('player');
+        if (playerNameFromUrl) {
+            playerSearchInput.value = playerNameFromUrl;
+            fetchOnlineData(playerNameFromUrl); // Call when page loads with a player in URL
+        }
+    });
+
+    // Assuming you have a modal function, if not, you can define a simple one
+    function showCustomModal(message) {
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+        modal.style.color = 'white';
+        modal.style.padding = '15px';
+        modal.style.borderRadius = '8px';
+        modal.style.zIndex = '1000';
+        modal.textContent = message;
+        document.body.appendChild(modal);
+
+        setTimeout(() => {
+            document.body.removeChild(modal);
+        }, 2000); // Remove after 2 seconds
+    }
         let categoriesChartInstance = null;
         let locationsChartInstance = null;
         let gametypesChartInstance = null;
+        async function loadTopRanksForPlayer(playerName) {
+            if (!playerName) {
+                console.warn('Player name is empty. Cannot fetch data.');
+                document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">Please enter a player name to view data.</td></tr>';
+                document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">Please enter a player name to view data.</td></tr>';
+                document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                
+                return;
+            }
 
-        // Add this function to your existing displayPlayerData function, after the points chart rendering
+            const apiUrl = `https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`;
+            let playerData = null;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        showCustomModal(`Player "${playerName}" not found. Please check the spelling.`);
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">Player data not found or error fetching.</td></tr>';
+                    document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">Player data not found or error fetching.</td></tr>';
+                    document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                    
+                    return;
+                }
+                playerData = await response.json();
+            } catch (error) {
+                console.error('Error fetching player data:', error);
+                document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">Error loading player data.</td></tr>';
+                document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">Error loading player data.</td></tr>';
+                document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                
+                return;
+            }
+
+            if (!playerData || !playerData.recent_top_10s) {
+                document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">No recent top 10s available for this player.</td></tr>';
+                document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">No rank distribution data available.</td></tr>';
+                document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                
+                return;
+            }
+
+            // --- Update Recent Top 10s Table ---
+            const recentTop10sTbody = document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0];
+            recentTop10sTbody.innerHTML = ''; // Clear existing rows
+
+            // Use recent_top_10s for both Recent Top 10s and All Top 10s as per aoe.json
+            const recentTop10s = playerData.recent_top_10s; 
+            const allTop10s = playerData.all_top_10s || recentTop10s; // Fallback to recent_top_10s if all_top_10s is not available
+            if (recentTop10s && recentTop10s.length > 0) {
+                // Display up to 10 recent top 10s in this section initially
+                recentTop10s.slice(0, 10).forEach(item => {
+                    const row = recentTop10sTbody.insertRow();
+                    row.insertCell().textContent = item.rank_type;
+                    row.insertCell().textContent = item.map;
+                    row.insertCell().textContent = item.rank;
+                    row.insertCell().textContent = formatTime(item.time);
+                    row.insertCell().textContent = item.server;
+                    row.insertCell().textContent = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A';
+                });
+            } else {
+                recentTop10sTbody.innerHTML = '<tr><td colspan="6">No recent top 10s available for this player.</td></tr>';
+            }
+
+            // --- Update Rank Distribution (Recent) as a Table ---
+            const rankDistributionTableBody = document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0];
+            rankDistributionTableBody.innerHTML = ''; // Clear existing content
+
+            if (allTop10s && allTop10s.length > 0) {
+                const rankCounts = {};
+                allTop10s.forEach(item => {
+                    const rank = item.rank;
+                    rankCounts[rank] = (rankCounts[rank] || 0) + 1;
+                });
+
+                // Display counts for ranks 1-10 in table rows
+                for (let i = 1; i <= 10; i++) {
+                    const count = rankCounts[i] || 0;
+                    const row = rankDistributionTableBody.insertRow();
+                    row.insertCell().textContent = getOrdinalSuffix(i) ;
+                    row.insertCell().textContent = count;
+                }
+            } else {
+                rankDistributionTableBody.innerHTML = '<tr><td colspan="2">No rank distribution data available.</td></tr>';
+            }
+
+            // --- Update All Top 10s Table ---
+            const allTop10sTbody = document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0];
+            
+            const allTop10sData = playerData.all_top_10s; // Also use recent_top_10s for All Top 10s
+            let displayedTop10s = allTop10sData.length; // Start with 10 displayed for 'All Top 10s' initially
+
+            function displayAllTop10s() {
+                allTop10sTbody.innerHTML = ''; // Clear existing rows
+                if (allTop10sData && allTop10sData.length > 0) {
+                    for (let i = 0; i < Math.min(displayedTop10s, allTop10sData.length); i++) {
+                        const item = allTop10sData[i];
+                        const row = allTop10sTbody.insertRow();
+                        row.insertCell().textContent = item.map.map;
+                        row.insertCell().textContent = item.rank;
+                        row.insertCell().textContent = formatTime(item.time);
+                        row.insertCell().textContent = item.map.server;
+                        row.insertCell().textContent = item.map.timestamp ? new Date(item.map.timestamp).toLocaleDateString() : 'N/A';
+                    }
+
+
+                } else {
+                    allTop10sTbody.innerHTML = '<tr><td colspan="6">No top 10s available.</td></tr>';
+                    
+                }
+            }
+
+            // Re-attach event listener to avoid duplicates if function is called multiple times
+            
+
+
+            displayAllTop10s(); // Initial display for All Top 10s
+        }
+
+        function getOrdinalSuffix(n) {
+            const s = ["th", "st", "nd", "rd"];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const playerSearchInput = document.getElementById('playerSearchInput');
+            const searchButton = document.getElementById('searchPlayerButton');
+
+            if (searchButton) {
+                searchButton.addEventListener('click', () => {
+                    const playerName = playerSearchInput.value.trim();
+                    searchPlayer(); // Call searchPlayer to load all data
+                });
+            }
+
+            if (playerSearchInput) {
+                playerSearchInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        searchPlayer(); // Call searchPlayer to load all data
+                    }
+                });
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const playerNameFromUrl = urlParams.get('player');
+            if (playerNameFromUrl) {
+                playerSearchInput.value = playerNameFromUrl;
+                searchPlayer(); 
+            } else {
+                playerSearchInput.value = '';
+                searchPlayer(); 
+            }
+        });
         function renderPieCharts(playerData) {
-            // Destroy existing chart instances
             if (categoriesChartInstance) {
                 categoriesChartInstance.destroy();
                 categoriesChartInstance = null;
@@ -711,7 +1312,6 @@
                 gametypesChartInstance = null;
             }
 
-            // Generate colors for pie charts
             const generateColors = (count) => {
                 const colors = [];
                 const baseColors = [
@@ -724,16 +1324,15 @@
                 return colors;
             };
 
-            // Most Played Categories Chart
             const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
             if (playerData.most_played_categories && playerData.most_played_categories.length > 0) {
-                const categoriesData = playerData.most_played_categories.slice(0, 8); // Top 8
+                const categoriesData = playerData.most_played_categories.slice(0, 8);
                 categoriesChartInstance = new Chart(categoriesCtx, {
                     type: 'pie',
                     data: {
                         labels: categoriesData.map(item => item.key),
                         datasets: [{
-                            data: categoriesData.map(item => Math.round(item.seconds_played / 3600)), // Convert to hours
+                            data: categoriesData.map(item => Math.round(item.seconds_played / 3600)),
                             backgroundColor: generateColors(categoriesData.length),
                             borderWidth: 2,
                             borderColor: 'rgba(255, 255, 255, 0.1)'
@@ -772,16 +1371,15 @@
                 categoriesCtx.fillText('No categories data available.', categoriesCtx.canvas.width / 2, categoriesCtx.canvas.height / 2);
             }
 
-            // Most Played Locations Chart
             const locationsCtx = document.getElementById('locationsChart').getContext('2d');
             if (playerData.most_played_locations && playerData.most_played_locations.length > 0) {
-                const locationsData = playerData.most_played_locations.slice(0, 8); // Top 8
+                const locationsData = playerData.most_played_locations.slice(0, 8);
                 locationsChartInstance = new Chart(locationsCtx, {
                     type: 'pie',
                     data: {
                         labels: locationsData.map(item => item.key),
                         datasets: [{
-                            data: locationsData.map(item => Math.round(item.seconds_played / 3600)), // Convert to hours
+                            data: locationsData.map(item => Math.round(item.seconds_played / 3600)),
                             backgroundColor: generateColors(locationsData.length),
                             borderWidth: 2,
                             borderColor: 'rgba(255, 255, 255, 0.1)'
@@ -820,16 +1418,15 @@
                 locationsCtx.fillText('No locations data available.', locationsCtx.canvas.width / 2, locationsCtx.canvas.height / 2);
             }
 
-            // Most Played Gametypes Chart
             const gametypesCtx = document.getElementById('gametypesChart').getContext('2d');
             if (playerData.most_played_gametypes && playerData.most_played_gametypes.length > 0) {
-                const gametypesData = playerData.most_played_gametypes.slice(0, 8); // Top 8
+                const gametypesData = playerData.most_played_gametypes.slice(0, 8);
                 gametypesChartInstance = new Chart(gametypesCtx, {
                     type: 'pie',
                     data: {
                         labels: gametypesData.map(item => item.key),
                         datasets: [{
-                            data: gametypesData.map(item => Math.round(item.seconds_played / 3600)), // Convert to hours
+                            data: gametypesData.map(item => Math.round(item.seconds_played / 3600)),
                             backgroundColor: generateColors(gametypesData.length),
                             borderWidth: 2,
                             borderColor: 'rgba(255, 255, 255, 0.1)'
@@ -886,7 +1483,6 @@
                     const row = completionProgressTableBody.insertRow();
                     row.insertCell().textContent = category.category;
                     
-                    // Progress bar cell
                     const progressCell = row.insertCell();
                     progressCell.innerHTML = `
                         <div class="progress-bar-container">
@@ -898,7 +1494,6 @@
                     row.insertCell().textContent = `${percentage}%`;
                 });
 
-                // Update total completion
                 const totalPercentage = totalMapsTotal > 0 ? ((totalMapsFinished / totalMapsTotal) * 100).toFixed(1) : 0;
                 document.getElementById('totalCompletionText').textContent = `${totalMapsFinished} / ${totalMapsTotal} maps completed (${totalPercentage}%)`;
                 document.getElementById('totalProgressBar').style.width = `${totalPercentage}%`;
@@ -911,14 +1506,12 @@
                 cell.style.textAlign = 'center';
                 cell.style.padding = '20px';
                 
-                // Reset total completion
                 document.getElementById('totalCompletionText').textContent = 'No completion data available';
                 document.getElementById('totalProgressBar').style.width = '0%';
                 document.getElementById('totalProgressBar').textContent = '0%';
             }
         }
 
-        // Page navigation
         function navigateToPage(url) {
             document.body.style.transform = 'translateX(-100%)';
             document.body.style.transition = 'transform 0.5s ease-in-out';
@@ -928,7 +1521,6 @@
             }, 250);
         }
 
-        // Player search functionality
         const playerSearchInput = document.getElementById('playerSearchInput');
         const searchPlayerButton = document.getElementById('searchPlayerButton');
         const playerStatsContainer = document.getElementById('playerStatsContainer');
@@ -937,8 +1529,9 @@
 
         let playtimeChartInstance = null;
         let pointsChartInstance = null;
-        let currentPlayerName = null; // To store the currently displayed player's name for sharing
-        let currentTeeInstance = null; // To store the TeeAssembler instance
+        let currentPlayerName = null;
+        let currentTeeInstance = null;
+        let currentTeeAssemblerString = null; // Initialize this variable
 
         async function searchPlayer() {
             const playerName = playerSearchInput.value.trim();
@@ -947,15 +1540,14 @@
                 return;
             }
 
-            currentPlayerName = playerName; // Set current player for sharing
+            currentPlayerName = playerName;
 
-            // Hide previous results and errors, show loading indicator
             playerStatsContainer.style.display = 'none';
             errorMessage.style.display = 'none';
             loadingIndicator.style.display = 'block';
-            document.getElementById('playerComparisonSection').style.display = 'none'; // Hide comparison section
+            document.getElementById('playerComparisonSection').style.display = 'none';
 
-            // Destroy existing chart instances before rendering new ones
+            // Destroy existing chart instances before creating new ones
             if (categoriesChartInstance) {
                 categoriesChartInstance.destroy();
                 categoriesChartInstance = null;
@@ -977,12 +1569,11 @@
                 pointsChartInstance = null;
             }
 
-            // Destroy existing TeeAssembler instance
             if (currentTeeInstance) {
                 currentTeeInstance.destroy();
                 currentTeeInstance = null;
             }
-            document.getElementById('playerAvatar').innerHTML = ''; // Clear avatar div content
+            document.getElementById('playerAvatar').innerHTML = '';
 
             try {
                 const response = await fetch(`https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`);
@@ -994,17 +1585,17 @@
                 }
                 const playerData = await response.json();
 
-                // Check if the API returned an empty object or error structure
                 if (Object.keys(playerData).length === 0 || !playerData.profile) {
                     throw new Error(`No detailed data available for player '${playerName}'.`);
                 }
 
                 displayPlayerData(playerData);
+                loadTopRanksForPlayer(playerName); // Call this to load recent top 10s and rank distribution
             } catch (error) {
                 console.error("Error fetching player data:", error);
                 displayError(error.message || "Failed to fetch player data. Please try again.");
             } finally {
-                loadingIndicator.style.display = 'none'; // Hide loading indicator
+                loadingIndicator.style.display = 'none';
             }
         }
 
@@ -1013,19 +1604,16 @@
         }
 
         function displayPlayerData(playerData) {
-            // THIS IS THE NEW OR MODIFIED LINE
             const profile = playerData.recent_player_info && playerData.recent_player_info.length > 0 ? playerData.recent_player_info[0] : playerData.profile;
             
-            // Removed charAt(0) for playerAvatar, now TeeAssembler will handle it.
-            // document.getElementById('playerAvatar').textContent = profile.name ? profile.name.charAt(0).toUpperCase() : '?';
             const data = playerData;
             console.log(data)
             console.log(profile)
-            const skinbodyColor = profile.skin_color_body; // Changed from data.recent_player_info[0] to profile
+            const skinbodyColor = profile.skin_color_body;
 
-            const skinfeetColor = profile.skin_color_feet; // Changed from data.recent_player_info[0] to profile
+            const skinfeetColor = profile.skin_color_feet;
 
-            const skinName = profile.skin_name || 'default'; // Changed from data.recent_player_info[0] to profile
+            const skinName = profile.skin_name || 'default';
 
             const effectiveBodyColor = skinbodyColor !== null ? skinbodyColor.toString() : '';
 
@@ -1045,14 +1633,14 @@
 
             }
             const teecontainer = document.querySelector('.teeassembler-tee')
-            teecontainer.innerHTML = ''; // Clear previous tee content // New variable to store the string for copying
+            teecontainer.innerHTML = '';
             let test;
             if (skinbodyColor === null || skinfeetColor === null) {
                 test = `player_skin ${skinName}; player_use_custom_color 0`;
             } else {
                 test = `player_skin ${skinName}; player_color_body ${effectiveBodyColor}; player_color_feet ${effectiveFeetColor}; player_use_custom_color 1`;
             }
-            currentTeeAssemblerString = test; // Store the generated string for copying
+            currentTeeAssemblerString = test;
             console.log(test);
             const myTeeOptions = {
 
@@ -1089,7 +1677,6 @@
 
             }
             
-
             
             document.getElementById('playerName').textContent = profile.name || 'N/A';
             document.getElementById('playerPoints').textContent = playerData.profile.points || 0;
@@ -1100,7 +1687,7 @@
                 playerClan.href = `clans.html?clanName=${encodeURIComponent(profile.clan)}`;
             } else {
                 playerClan.textContent = "N/A";
-                playerClan.href = "#"; // Make it a dead link if no clan
+                playerClan.href = "#";
             }
 
             const countryCode = profile.country !== undefined && profile.country !== null ? profile.country.toString() : "-1";
@@ -1133,13 +1720,12 @@
 
             let totalSecondsPlayed = 0;
             let earliestFinishDate = null;
-            const mapPlaytime = {}; // To calculate most played maps
+            const mapPlaytime = {};
 
             if (playerData.finishes) {
                 playerData.finishes.forEach(finish => {
                     totalSecondsPlayed += finish.seconds_played || 0;
 
-                    // Determine start of playtime
                     if (finish.timestamp) {
                         const finishDate = new Date(finish.timestamp);
                         if (!earliestFinishDate || finishDate < earliestFinishDate) {
@@ -1147,7 +1733,6 @@
                         }
                     }
 
-                    // Calculate total playtime per map
                     const mapKey = `${finish.map.map} - ${finish.server}`;
                     mapPlaytime[mapKey] = (mapPlaytime[mapKey] || { totalTime: 0, mapName: finish.map.map, serverName: finish.server });
                     mapPlaytime[mapKey].totalTime += (finish.seconds_played || 0);
@@ -1157,16 +1742,23 @@
             document.getElementById('lastSeen').textContent = profile.last_seen ? new Date(profile.last_seen).toLocaleDateString() : 'N/A';
             document.getElementById('playerStartPlaytime').textContent = earliestFinishDate ? earliestFinishDate.toLocaleDateString() : 'N/A';
 
-            // Display Most Played Maps
             const mostPlayedMapsTableBody = document.getElementById('mostPlayedMapsTableBody');
             mostPlayedMapsTableBody.innerHTML = '';
-            const sortedMaps = Object.values(mapPlaytime).sort((a, b) => b.totalTime - a.totalTime).slice(0, 10); // Top 10
+            const sortedMaps = Object.values(mapPlaytime).sort((a, b) => b.totalTime - a.totalTime).slice(0, 10);
             if (sortedMaps.length > 0) {
                 sortedMaps.forEach(map => {
                     const row = mostPlayedMapsTableBody.insertRow();
-                    row.insertCell().textContent = map.mapName;
+                    const mapCell = row.insertCell();
                     row.insertCell().textContent = map.serverName;
                     row.insertCell().textContent = formatTime(map.totalTime);
+
+                    const mapLink = document.createElement('a');
+                    mapLink.href = `maps.html?map=${encodeURIComponent(map.mapName)}`;
+                    mapLink.textContent = map.mapName;
+                    mapLink.style.color = 'var(--primary-color)';
+                    mapLink.style.textDecoration = 'underline';
+
+                    mapCell.appendChild(mapLink);
                 });
             } else {
                 const row = mostPlayedMapsTableBody.insertRow();
@@ -1179,16 +1771,24 @@
 
 
             const recentFinishesTableBody = document.getElementById('recentFinishesTableBody');
-            recentFinishesTableBody.innerHTML = ''; // Clear previous data
+            recentFinishesTableBody.innerHTML = '';
             if (playerData.recent_finishes && playerData.recent_finishes.length > 0) {
                 playerData.recent_finishes.forEach(finish => {
                     const row = recentFinishesTableBody.insertRow();
-                    row.insertCell().textContent = finish.map.map;
+                    const mapCell = row.insertCell();
                     row.insertCell().textContent = finish.server;
-                    row.insertCell().textContent = finish.time ? finish.time.toFixed(2) + 's' : 'N/A';
+                    row.insertCell().textContent = finish.time ? formatTime(finish.time.toFixed(2)): 'N/A';
                     row.insertCell().textContent = finish.timestamp ? new Date(finish.timestamp).toLocaleDateString() : 'N/A';
                     row.insertCell().textContent = finish.rank || 'N/A';
                     row.insertCell().textContent = finish.team_rank || 'N/A';
+
+                    const mapLink = document.createElement('a');
+                    mapLink.href = `maps.html?map=${encodeURIComponent(finish.map.map)}`;
+                    mapLink.textContent = finish.map.map;
+                    mapLink.style.color = 'var(--primary-color)';
+                    mapLink.style.textDecoration = 'underline';
+
+                    mapCell.appendChild(mapLink);
                 });
             } else {
                 const row = recentFinishesTableBody.insertRow();
@@ -1198,12 +1798,9 @@
                 cell.style.textAlign = 'center';
                 cell.style.padding = '20px';
             }
-
-
             
-
             const favouriteTeammatesTableBody = document.getElementById('favouriteTeammatesTableBody');
-            favouriteTeammatesTableBody.innerHTML = ''; // Clear previous data
+            favouriteTeammatesTableBody.innerHTML = '';
             if (playerData.favourite_teammates && playerData.favourite_teammates.length > 0) {
                 playerData.favourite_teammates.forEach(teammate => {
                     const row = favouriteTeammatesTableBody.insertRow();
@@ -1219,13 +1816,12 @@
                 cell.style.padding = '20px';
             }
 
-
-
-            // Render Playtime Chart
             const playtimeCtx = document.getElementById('playtimeChart').getContext('2d');
+            if (playtimeChartInstance) { // Destroy existing chart if it exists
+                playtimeChartInstance.destroy();
+            }
             if (playerData.playtime_per_month && playerData.playtime_per_month.length > 0) {
                 const playtimeLabels = playerData.playtime_per_month.map(item => item.month);
-                // Trim hours and convert to whole numbers for display
                 const playtimeData = playerData.playtime_per_month.map(item => Math.round(item.seconds_played / 3600));
 
                 playtimeChartInstance = new Chart(playtimeCtx, {
@@ -1233,10 +1829,10 @@
                     data: {
                         labels: playtimeLabels,
                         datasets: [{
-                            label: 'Hours Played', /* Changed label */
+                            label: 'Hours Played',
                             data: playtimeData,
-                            borderColor: 'var(--primary-color)', /* Graph color to --primary-color */
-                            backgroundColor: 'rgba(85, 172, 238, 0.2)', /* Consistent transparent primary-color */
+                            borderColor: 'var(--primary-color)',
+                            backgroundColor: 'rgba(85, 172, 238, 0.2)',
                             tension: 0.3,
                             fill: true,
                         }]
@@ -1249,17 +1845,17 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Hours Played', /* Changed title */
-                                    color: 'white' /* Set text color to white */
+                                    text: 'Hours Played',
+                                    color: 'white'
                                 },
                                 ticks: {
-                                    color: 'white', /* Set text color to white */
+                                    color: 'white',
                                     callback: function(value) {
-                                        return value + 'h'; // Append 'h' to the tick values
+                                        return value + 'h';
                                     }
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.2)' /* Lighter grid for white text */
+                                    color: 'rgba(255, 255, 255, 0.2)'
                                 }
                             },
                             x: {
@@ -1267,22 +1863,22 @@
                                 title: {
                                     display: true,
                                     text: 'Month',
-                                    color: 'white' /* Set text color to white */
+                                    color: 'white'
                                 },
                                 ticks: {
-                                    color: 'white', /* Set text color to white */
+                                    color: 'white',
                                     autoSkip: true,
                                     maxTicksLimit: 20
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.2)' /* Lighter grid for white text */
+                                    color: 'rgba(255, 255, 255, 0.2)'
                                 }
                             }
                         },
                         plugins: {
                             legend: {
                                 labels: {
-                                    color: 'white' /* Set text color to white */
+                                    color: 'white'
                                 }
                             },
                              tooltip: {
@@ -1305,18 +1901,19 @@
             } else {
                 playtimeCtx.clearRect(0, 0, playtimeCtx.canvas.width, playtimeCtx.canvas.height);
                 playtimeCtx.font = "18px 'SF Pro Rounded'";
-                playtimeCtx.fillStyle = 'white'; /* Set text color to white */
+                playtimeCtx.fillStyle = 'white';
                 playtimeCtx.textAlign = 'center';
                 playtimeCtx.fillText('No playtime data available.', playtimeCtx.canvas.width / 2, playtimeCtx.canvas.height / 2);
             }
 
-            // Render Points Chart
             const pointsCtx = document.getElementById('pointsChart').getContext('2d');
+            if (pointsChartInstance) { // Destroy existing chart if it exists
+                pointsChartInstance.destroy();
+            }
             if (playerData.points_graph && playerData.points_graph.length > 0) {
-                // Filter points data to only include points where the value has changed
                 const filteredPointsGraph = [];
                 if (playerData.points_graph.length > 0) {
-                    filteredPointsGraph.push(playerData.points_graph[0]); // Always include the first point
+                    filteredPointsGraph.push(playerData.points_graph[0]);
                     for (let i = 1; i < playerData.points_graph.length; i++) {
                         if (playerData.points_graph[i].points !== playerData.points_graph[i - 1].points) {
                             filteredPointsGraph.push(playerData.points_graph[i]);
@@ -1334,8 +1931,8 @@
                         datasets: [{
                             label: 'Points',
                             data: pointsData,
-                            borderColor: 'var(--primary-color)', /* Graph color to --primary-color */
-                            backgroundColor: 'rgba(235, 164, 52, 0.2)', /* Consistent transparent color */
+                            borderColor: 'var(--primary-color)',
+                            backgroundColor: 'rgba(235, 164, 52, 0.2)',
                             tension: 0.3,
                             fill: true,
                         }]
@@ -1349,35 +1946,35 @@
                                 title: {
                                     display: true,
                                     text: 'Points',
-                                    color: 'white' /* Set text color to white */
+                                    color: 'white'
                                 },
                                 ticks: {
-                                    color: 'white' /* Set text color to white */
+                                    color: 'white'
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.2)' /* Lighter grid for white text */
+                                    color: 'rgba(255, 255, 255, 0.2)'
                                 }
                             },
                             x: {
                                 title: {
                                     display: true,
                                     text: 'Date',
-                                    color: 'white' /* Set text color to white */
+                                    color: 'white'
                                 },
                                 ticks: {
-                                    color: 'white', /* Set text color to white */
+                                    color: 'white',
                                     autoSkip: true,
                                     maxTicksLimit: 20
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.2)' /* Lighter grid for white text */
+                                    color: 'rgba(255, 255, 255, 0.2)'
                                 }
                             }
                         },
                         plugins: {
                             legend: {
                                 labels: {
-                                    color: 'white' /* Set text color to white */
+                                    color: 'white'
                                 }
                             }
                         }
@@ -1386,13 +1983,13 @@
             } else {
                 pointsCtx.clearRect(0, 0, pointsCtx.canvas.width, pointsCtx.canvas.height);
                 pointsCtx.font = "18px 'SF Pro Rounded'";
-                pointsCtx.fillStyle = 'white'; /* Set text color to white */
+                pointsCtx.fillStyle = 'white';
                 pointsCtx.textAlign = 'center';
                 pointsCtx.fillText('No points data available.', pointsCtx.canvas.width / 2, pointsCtx.canvas.height / 2);
             }
 
             playerStatsContainer.style.display = 'block';
-            document.getElementById('playerComparisonSection').style.display = 'block'; // Show comparison section
+            document.getElementById('playerComparisonSection').style.display = 'block';
         }
 
         function displayError(message) {
@@ -1400,7 +1997,7 @@
             errorMessage.style.display = 'block';
             playerStatsContainer.style.display = 'none';
             loadingIndicator.style.display = 'none';
-            document.getElementById('playerComparisonSection').style.display = 'none'; // Hide comparison section
+            document.getElementById('playerComparisonSection').style.display = 'none';
         }
 
         function formatTime(seconds) {
@@ -1412,43 +2009,98 @@
             let parts = [];
             if (hours > 0) parts.push(`${hours}h`);
             if (minutes > 0) parts.push(`${minutes}m`);
-            if (remainingSeconds > 0 || (hours === 0 && minutes === 0 && seconds === 0)) parts.push(`${remainingSeconds.toFixed(0)}s`); // Show 0s if total is 0
+            if (remainingSeconds > 0 || (hours === 0 && minutes === 0 && seconds === 0)) parts.push(`${remainingSeconds.toFixed(0)}s`);
 
             return parts.join(' ');
         }
 
-        // Share Player Profile
         function sharePlayerProfile() {
             if (currentPlayerName) {
                 const shareUrl = `${window.location.origin}${window.location.pathname}?player=${encodeURIComponent(currentPlayerName)}`;
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    // Show brief feedback
-                    const tooltip = document.createElement('div');
-                    tooltip.textContent = 'Link Copied!';
-                    tooltip.style.cssText = `
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: #28a745;
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 4px;
-                        z-index: 10000;
-                        font-weight: 600;
-                    `;
-                    document.body.appendChild(tooltip);
-                    setTimeout(() => tooltip.remove(), 1500);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy link. Please try again or copy manually.');
-                });
+                const tempInput = document.createElement('textarea');
+                tempInput.value = shareUrl;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                const tooltip = document.createElement('div');
+                tooltip.textContent = 'Link Copied!';
+                tooltip.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #28a745;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    z-index: 10000;
+                    font-weight: 600;
+                `;
+                document.body.appendChild(tooltip);
+                setTimeout(() => tooltip.remove(), 1500);
             } else {
-                alert('No player profile loaded to share.');
+                showCustomModal('No player profile loaded to share.');
             }
         }
 
-        // Player Comparison
+        function showCustomModal(message) {
+            const modalId = 'customAlertModal';
+            let modal = document.getElementById(modalId);
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = modalId;
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10001;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+                `;
+                modal.innerHTML = `
+                    <div style="
+                        background: var(--glass-bg);
+                        backdrop-filter: blur(15px);
+                        border: 1px solid var(--glass-border);
+                        border-radius: 12px;
+                        padding: 30px;
+                        text-align: center;
+                        color: var(--primary-color);
+                        max-width: 400px;
+                        width: 90%;
+                        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+                        position: relative;
+                    ">
+                        <p style="margin-bottom: 20px; font-size: 1.1em;">${message}</p>
+                        <button style="
+                            background-color: var(--primary-color);
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            padding: 10px 20px;
+                            font-size: 16px;
+                            cursor: pointer;
+                            transition: background-color 0.3s ease;
+                        " onclick="document.getElementById('${modalId}').style.opacity = '0'; document.getElementById('${modalId}').style.visibility = 'hidden';">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } else {
+                modal.querySelector('p').textContent = message;
+            }
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+        }
+
         const player1SearchInput = document.getElementById('player1SearchInput');
         const player2SearchInput = document.getElementById('player2SearchInput');
         const comparePlayersButton = document.getElementById('comparePlayersButton');
@@ -1493,12 +2145,12 @@
                 console.error("Error comparing players:", error);
                 comparisonErrorMessage.textContent = error.message || "Failed to compare players. Please try again.";
                 comparisonErrorMessage.style.display = 'block';
-                comparisonResultsDiv.innerHTML = ''; // Clear loading message
+                comparisonResultsDiv.innerHTML = '';
             }
         }
 
         function displayComparisonResults(player1Data, player2Data) {
-            comparisonResultsDiv.innerHTML = ''; // Clear previous comparison results
+            comparisonResultsDiv.innerHTML = '';
 
             const player1Card = createComparisonCard(player1Data);
             const player2Card = createComparisonCard(player2Data);
@@ -1552,16 +2204,15 @@
         if (teeAssemblerContainer) {
             teeAssemblerContainer.addEventListener('click', () => {
                 if (currentTeeAssemblerString) {
-                    navigator.clipboard.writeText(currentTeeAssemblerString)
-                        .then(() => {
-                            alert('Copied to clipboard: ' + currentTeeAssemblerString);
-                        })
-                        .catch(err => {
-                            console.error('Failed to copy text: ', err);
-                            alert('Failed to copy to clipboard.');
-                        });
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = currentTeeAssemblerString;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    showCustomModal('Copied to clipboard: ' + currentTeeAssemblerString);
                 } else {
-                    alert('No player skin data to copy.');
+                    showCustomModal('No player skin data to copy.');
                 }
             });
         }
@@ -1579,7 +2230,6 @@
             }
         });
 
-        // Optional: Load a default player on page load, or show instructions
         window.addEventListener('load', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const playerNameFromUrl = urlParams.get('player');
@@ -1587,8 +2237,8 @@
                 playerSearchInput.value = playerNameFromUrl;
                 searchPlayer();
             } else {
-                playerSearchInput.value = ''; // Default player if no URL param
-                searchPlayer();
+                playerSearchInput.value = '';
+                searchPlayer(); 
             }
         });
     </script>
