@@ -1,1 +1,1238 @@
-Work in progress! use maps and players instead
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servers - TeeViewer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* General styling from your first code snippet (for filters) */
+        .servers-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center; /* Center the filter elements */
+        }
+
+        .search-input {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: var(--text-color);
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 16px;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+        }
+
+        .filter-select {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Existing styles from your second code snippet */
+        #serversTable {
+            border-spacing: 0px;
+            border-collapse: collapse;
+            margin: 30px auto;
+            width: 95%;
+            text-align: center;
+            max-width: 1200px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        #serversTable th {
+            background: rgba(255, 69, 0, 0.1);
+            color: var(--primary-color);
+            padding: 15px;
+            font-weight: 600;
+            border-style: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #serversTable th:hover {
+            background: rgba(255, 69, 0, 0.2);
+        }
+
+        #serversTable td {
+            padding: 15px;
+            transition: background-color 0.2s ease;
+            border-style: none;
+            color: var(--primary-color);
+        }
+
+        .server-row {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .server-row:hover {
+            background: rgba(255, 69, 0, 0.05);
+        }
+
+        .type-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .type-official { background: linear-gradient(135deg, #4CAF50, #45a049); } /* Green for official */
+        .type-community { background: linear-gradient(135deg, #FF9800, #f57c00); } /* Orange for community */
+        .type-private { background: linear-gradient(135deg, #f44336, #d32f2f); } /* Red for private */
+        .type-unknown { background: linear-gradient(135deg, #607D8B, #455a64); } /* Grey for unknown */
+
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 69, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Individual Server Page Styles */
+        .individual-server-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: none; /* Hidden by default */
+        }
+
+        .individual-server-container.show {
+            display: block;
+        }
+
+        .back-button {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: var(--primary-color);
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: var(--primary-color);
+            transform: translateX(-5px);
+        }
+
+        .server-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .server-title {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 137, 27, 0.6);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .server-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .server-main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .server-info-section, .server-stats-section, .server-client-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .server-client-section {
+            grid-column: 1 / -1; /* Span full width */
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .large-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 69, 0, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 69, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .large-stat-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .large-stat-value {
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .server-client-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .server-client-list-table th, .server-client-list-table td {
+            padding: 8px 5px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        .server-client-list-table th {
+            color: var(--primary-color);
+            font-weight: 600;
+            background-color: rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+        .server-client-list-table tr:last-child td {
+            border-bottom: none;
+        }
+        .server-client-list-table img {
+            vertical-align: middle;
+            margin-right: 5px;
+            width: 18px; /* Adjust flag size */
+            height: auto;
+            border-radius: 2px;
+        }
+        .server-client-list-table td:nth-child(2) { /* For player name */
+            font-weight: 600;
+        }
+
+        /* Show More Button Styling */
+        .show-more-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .show-more-button {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            color: white;
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
+        }
+
+        .show-more-button:hover {
+            background: #ff3300;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 69, 0, 0.4);
+        }
+
+        .show-more-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .share-button {
+            background: #007bff; /* A blue color for share */
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            font-family: 'SF Pro Rounded', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+            margin-top: 15px; /* Adjust spacing as needed */
+            display: inline-block; /* For proper spacing */
+        }
+
+        .share-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Chart container styling */
+        .chart-container {
+            width: 100%;
+            height: 300px; /* Fixed height for the chart */
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            position: relative; /* For positioning canvas */
+        }
+
+        .chart-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Removed specific heatmap styling, ApexCharts will handle it */
+        #apexHeatmapChart {
+            display: none; /* Hide heatmap container */
+        }
+
+        @media (max-width: 768px) {
+            .search-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-input, .filter-select {
+                min-width: unset;
+                width: 100%;
+            }
+            #serversTable th, #serversTable td {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            .server-main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .server-title {
+                font-size: 36px;
+            }
+            .server-client-list-table th, .server-client-list-table td {
+                padding: 6px 3px;
+                font-size: 12px;
+            }
+            .server-client-list-table img {
+                width: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
+        <div class="nav-buttons">
+<button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
+        </div>
+    </div>
+
+    <!-- Main Servers Browser -->
+    <div class="servers-container" id="serversBrowser">
+        <h1 style="text-align: center; color: var(--primary-color); font-size: 36px; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255, 137, 27, 0.3);">
+            Server List
+        </h1>
+
+        <div class="search-filters">
+            <input type="text" id="serverSearch" class="search-input" placeholder="Search servers by name or map...">
+            
+            <select id="gameTypeFilter" class="filter-select">
+                <option value="">All Game Types</option>
+                <!-- Game types will be populated here -->
+            </select>
+
+            <select id="sortBy" class="filter-select">
+                <option value="name">Sort by Name</option>
+                <option value="players">Sort by Players</option>
+                <option value="map">Sort by Map</option>
+                <option value="relevanceScore">Sort by Relevance</option>
+            </select>
+        </div>
+
+        <table id="serversTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('name')">Server Name</th>
+                    <th onclick="sortTable('players')">Players</th>
+                    <th onclick="sortTable('map')">Map</th>
+                    <th onclick="sortTable('gameType')">Game Type</th>
+                    <th onclick="sortTable('version')">Version</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="serversTableBody">
+                <tr>
+                    <td colspan="7" style="padding: 40px;">
+                        <div class="loading" style="margin: 0 auto;"></div>
+                        <div style="margin-top: 15px;">Loading servers...</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="show-more-container">
+            <button id="showMoreServersBtn" class="show-more-button" style="display: none;">Show More</button>
+        </div>
+    </div>
+
+    <!-- Individual Server Page -->
+    <div class="individual-server-container" id="individualServer">
+        <button class="back-button" onclick="goBackToServerBrowser()">
+            ← Back to Server Browser
+        </button>
+
+        <div class="server-header">
+            <h1 class="server-title" id="individualServerTitle">Server Name</h1>
+            <p class="server-subtitle" id="individualServerSubtitle">Loading server information...</p>
+            <button id="shareServerButton" class="share-button" style="display: none;" onclick="shareServerDetails()">Share Server</button>
+        </div>
+        
+        <div class="server-main-content">
+            <!-- Server Info Section -->
+            <div class="server-info-section">
+                <h2 class="section-title">Server Information</h2>
+                <div id="individualServerInfo">
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Loading...</span>
+                        <span class="large-stat-value">Please wait</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server Statistics Section -->
+            <div class="server-stats-section">
+                <h2 class="section-title">Server Statistics</h2>
+                <div id="individualServerStats">
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Loading...</span>
+                        <span class="large-stat-value">Please wait</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 15px; text-align: center; color: var(--primary-color);">Player Activity Over Time</h4>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'day')">Day</button>
+                        <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'week')">Week</button>
+                        <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'month')">Month</button>
+                    </div>
+                    <div class="chart-container" style="height: 300px; margin-bottom: 20px;">
+                        <canvas id="playerPeakChart"></canvas>
+                    </div>
+                    
+                    <!-- Removed Hourly Player Density heading and container -->
+                </div>
+            </div>
+
+            <!-- Client List Section -->
+            <div class="server-client-section">
+                <h2 class="section-title">Players on Server</h2>
+                <div id="serverClientsListContainer">
+                    <p style="text-align: center; color: rgba(255, 255, 255, 0.7);">Loading player list...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Removed ApexCharts import as it's no longer used -->
+    <script>
+        let allServers = [];
+        let currentSort = { column: 'relevanceScore', direction: 'desc' }; // Default sort by relevance
+        let filteredAndSortedServers = [];
+        let serversPerPage = 50; // Number of servers to display per page
+        let currentPage = 1; // Current page for pagination
+        let currentServerIp = null; // Store current server IP for sharing
+        let currentServerPort = null; // Store current server Port for sharing
+        let playerActivityChart = null; // Global variable for the Chart.js instance
+
+
+        // Function to navigate to a different HTML page
+        function navigateToPage(url) {
+            document.body.style.transform = 'translateX(-100%)';
+            document.body.style.transition = 'transform 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = url;
+            }, 250);
+        }
+
+        // --- Helper Functions ---
+
+        // Helper to format time in seconds to human-readable format (e.g., 1h 30m 15s)
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds === null) return 'N/A';
+            seconds = Math.round(seconds); 
+
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = seconds % 60;
+
+            let parts = [];
+            if (hours > 0) parts.push(`${hours}h`);
+            if (minutes > 0) parts.push(`${minutes}m`);
+            if (remainingSeconds > 0 || (hours === 0 && minutes === 0 && seconds === 0)) parts.push(`${remainingSeconds}s`);
+
+            return parts.join(' ') || '0s';
+        }
+
+        // --- Toast Notification ---
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: ${isError ? '#ff4444' : '#4CAF50'};
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 2000;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '1';
+            }, 10); 
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        // --- Server List Functions ---
+
+        // Fetch servers data from the API
+        async function loadServers() {
+            try {
+                const response = await fetch('https://api.status.tw/server/list');
+                const data = await response.json();
+                allServers = data; 
+                populateGameTypeFilter(data);
+                filterAndSortServers();
+                // Call checkUrlParams AFTER allServers is populated
+                checkUrlParams(); 
+            } catch (error) {
+                console.error('Error loading servers:', error);
+                document.getElementById('serversTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="color: #ff4444; padding: 20px;">Failed to load servers. Please try again later.</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Populate game type filter dropdown
+        function populateGameTypeFilter(servers) {
+            const gameTypeFilter = document.getElementById('gameTypeFilter');
+            const gameTypes = new Set();
+            servers.forEach(server => {
+                if (server.gameType && server.gameType.name) {
+                    gameTypes.add(server.gameType.name);
+                }
+            });
+
+            // Clear existing options except "All Game Types"
+            while (gameTypeFilter.options.length > 1) {
+                gameTypeFilter.remove(1);
+            }
+
+            Array.from(gameTypes).sort().forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                gameTypeFilter.appendChild(option);
+            });
+        }
+
+        // Filter and sort servers based on current criteria
+        function filterAndSortServers() {
+            currentPage = 1; // Reset to first page on new filter/sort
+            const searchTerm = document.getElementById('serverSearch').value.toLowerCase();
+            const gameTypeFilter = document.getElementById('gameTypeFilter').value;
+            const newSortByColumn = document.getElementById('sortBy').value; // Get the selected sort column
+
+            // Update currentSort.column and direction based on dropdown selection
+            if (currentSort.column !== newSortByColumn) {
+                currentSort.column = newSortByColumn;
+                // Set default direction based on column type
+                if (newSortByColumn === 'relevanceScore' || newSortByColumn === 'players') {
+                    currentSort.direction = 'desc'; // For numerical/relevance, default to descending (highest first)
+                } else {
+                    currentSort.direction = 'asc'; // For alphabetical, default to ascending
+                }
+            }
+            // If the same column is selected from dropdown, do not toggle direction here.
+            // Toggling is handled by the sortTable function when clicking table headers.
+
+
+            filteredAndSortedServers = allServers.filter(server => {
+                const matchesSearch = server.name.toLowerCase().includes(searchTerm) ||
+                                    (server.map && server.map.name && server.map.name.toLowerCase().includes(searchTerm));
+                const matchesGameType = gameTypeFilter === '' || (server.gameType && server.gameType.name === gameTypeFilter);
+                return matchesSearch && matchesGameType;
+            });
+
+            // Apply sorting
+            filteredAndSortedServers.sort((a, b) => {
+                let valA, valB;
+                switch (currentSort.column) { // Use currentSort.column for sorting
+                    case 'name':
+                        valA = a.name.toLowerCase();
+                        valB = b.name.toLowerCase();
+                        break;
+                    case 'players':
+                        valA = a.numPlayers || 0;
+                        valB = b.numPlayers || 0;
+                        break;
+                    case 'map':
+                        valA = (a.map && a.map.name) ? a.map.name.toLowerCase() : '';
+                        valB = (b.map && b.map.name) ? b.map.name.toLowerCase() : '';
+                        break;
+                    case 'gameType':
+                        valA = (a.gameType && a.gameType.name) ? a.gameType.name.toLowerCase() : '';
+                        valB = (b.gameType && b.gameType.name) ? b.gameType.name.toLowerCase() : '';
+                        break;
+                    case 'relevanceScore':
+                        valA = a.relevanceScore || 0;
+                        valB = b.relevanceScore || 0;
+                        break;
+                    default:
+                        valA = a.relevanceScore || 0;
+                        valB = b.relevanceScore || 0;
+                }
+
+                if (typeof valA === 'string') {
+                    return currentSort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(a);
+                } else {
+                    return currentSort.direction === 'asc' ? valA - valB : valB - valA;
+                }
+            });
+
+            displayServers(filteredAndSortedServers);
+        }
+
+        // Display servers in the table with pagination
+        function displayServers(serversToDisplay) {
+            const tableBody = document.getElementById('serversTableBody');
+            const showMoreBtn = document.getElementById('showMoreServersBtn');
+            
+            // Clear only if it's the first page
+            if (currentPage === 1) {
+                tableBody.innerHTML = ''; 
+            }
+
+            const startIndex = (currentPage - 1) * serversPerPage;
+            const endIndex = startIndex + serversPerPage;
+            const serversToRender = serversToDisplay.slice(startIndex, endIndex);
+
+            if (serversToRender.length === 0 && currentPage === 1) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 20px; color: rgba(255, 255, 255, 0.7);">No servers found matching your criteria.</td>
+                    </tr>
+                `;
+                showMoreBtn.style.display = 'none';
+                return;
+            }
+
+            serversToRender.forEach(serverData => {
+                const row = tableBody.insertRow();
+                row.className = 'server-row';
+                row.onclick = () => showIndividualServer(serverData.ip, serverData.port); 
+
+                const hasPasswordIcon = serverData.hasPassword ? '🔒' : '';
+                const mapCellContent = serverData.map && serverData.map.name 
+                                     ? `<a href="maps.html?map=${encodeURIComponent(serverData.map.name)}" onclick="event.stopPropagation();" style="color: var(--primary-color); text-decoration: underline;">${serverData.map.name}</a>` 
+                                     : 'N/A';
+
+                row.innerHTML = `
+                    <td>${serverData.name}</td>
+                    <td>${serverData.numPlayers}/${serverData.maxPlayers}</td>
+                    <td>${mapCellContent}</td>
+                    <td>${serverData.gameType ? serverData.gameType.name : 'N/A'}</td>
+                    <td>${serverData.version ? serverData.version.version : 'N/A'}</td>
+                    <td>${hasPasswordIcon}</td>
+                    <td>
+                        <button class="categories" onclick="event.stopPropagation(); showIndividualServer('${serverData.ip}', ${serverData.port})">
+                            Details
+                        </button>
+                    </td>
+                `;
+            });
+
+            // Manage "Show More" button visibility
+            if (endIndex < serversToDisplay.length) {
+                showMoreBtn.style.display = 'block';
+            } else {
+                showMoreBtn.style.display = 'none';
+            }
+        }
+
+        // Load more servers for pagination
+        function loadMoreServers() {
+            currentPage++;
+            displayServers(filteredAndSortedServers);
+        }
+
+        // Sort table columns
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                // Set default direction based on column type when a new column is clicked
+                if (column === 'relevanceScore' || column === 'players') {
+                    currentSort.direction = 'desc'; // For numerical/relevance, default to descending
+                } else {
+                    currentSort.direction = 'asc'; // For alphabetical, default to ascending
+                }
+            }
+            filterAndSortServers(); // Re-filter and sort, which resets page to 1
+        }
+
+        // --- Individual Server Page Functions ---
+
+        // Check for URL parameters on page load to determine initial view
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ipParam = urlParams.get('ip');
+            const portParam = urlParams.get('port');
+            
+            if (ipParam && portParam) {
+                showIndividualServer(decodeURIComponent(ipParam), parseInt(portParam));
+            } else {
+                showServerBrowser();
+            }
+        }
+
+        // Show server browser view
+        function showServerBrowser() {
+            document.getElementById('serversBrowser').style.display = 'block';
+            document.getElementById('individualServer').classList.remove('show');
+            
+            const url = new URL(window.location);
+            url.searchParams.delete('ip');
+            url.searchParams.delete('port');
+            window.history.pushState({}, '', url);
+
+            // Hide share button when going back to browser view
+            document.getElementById('shareServerButton').style.display = 'none';
+            // Destroy charts when navigating away
+            if (playerActivityChart) {
+                playerActivityChart.destroy();
+                playerActivityChart = null;
+            }
+            // Removed apexHeatmapChart destruction here as it's no longer used
+        }
+
+        // Go back to server browser
+        function goBackToServerBrowser() {
+            showServerBrowser();
+        }
+
+        // Share server details functionality
+        async function shareServerDetails() {
+            if (currentServerIp && currentServerPort) {
+                const urlToShare = `${window.location.origin}/servers.html?ip=${encodeURIComponent(currentServerIp)}&port=${currentServerPort}`;
+                try {
+                    // Using document.execCommand for better compatibility in iframe environments
+                    const el = document.createElement('textarea');
+                    el.value = urlToShare;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+                    showToast('Server URL copied to clipboard!');
+                } catch (err) {
+                    console.error('Failed to copy URL:', err);
+                    showToast('Failed to copy server URL.', true);
+                }
+            } else {
+                showToast('No server selected to share.', true);
+            }
+        }
+
+        // Show individual server view
+        async function showIndividualServer(ip, port) {
+            document.getElementById('serversBrowser').style.display = 'none';
+            document.getElementById('individualServer').classList.add('show');
+            
+            // Store current server IP and Port for sharing
+            currentServerIp = ip;
+            currentServerPort = port;
+            document.getElementById('shareServerButton').style.display = 'inline-block'; // Show share button
+
+            const url = new URL(window.location);
+            url.searchParams.set('ip', encodeURIComponent(ip));
+            url.searchParams.set('port', port);
+            window.history.pushState({}, '', url);
+
+            // Find the server data from allServers array
+            const serverData = allServers.find(s => s.ip === ip && s.port === port);
+
+            const title = document.getElementById('individualServerTitle');
+            const subtitle = document.getElementById('individualServerSubtitle');
+            const infoContainer = document.getElementById('individualServerInfo');
+            const statsContainer = document.getElementById('individualServerStats');
+            const clientsListContainer = document.getElementById('serverClientsListContainer');
+
+
+            // Initial loading state
+            title.textContent = serverData ? serverData.name : 'Loading Server...';
+            subtitle.textContent = 'Loading server information and statistics...';
+            infoContainer.innerHTML = `
+                <div class="large-stat-item">
+                    <span class="large-stat-label">Loading...</span>
+                    <span class="large-stat-value">Please wait</span>
+                </div>
+            `;
+            statsContainer.innerHTML = `
+                <div class="large-stat-item">
+                    <span class="large-stat-label">Loading...</span>
+                    <span class="large-stat-value">Please wait</span>
+                </div>
+                <h4 style="margin-top: 15px; text-align: center; color: var(--primary-color);">Player Activity Over Time</h4>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'day')">Day</button>
+                    <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'week')">Week</button>
+                    <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'month')">Month</button>
+                </div>
+                <div class="chart-container" style="height: 300px; margin-bottom: 20px;">
+                    <canvas id="playerPeakChart"></canvas>
+                </div>
+            `;
+            clientsListContainer.innerHTML = `<p style="text-align: center; color: rgba(255, 255, 255, 0.7);">Loading player list...</p>`;
+
+            if (!serverData) {
+                console.error('Server data not found in current list.');
+                title.textContent = 'Server Not Found';
+                subtitle.textContent = 'Please go back to the server list.';
+                infoContainer.innerHTML = `<p style="color: #ff4444; text-align: center;">Could not find server details.</p>`;
+                statsContainer.innerHTML = `<p style="color: #ff4444; text-align: center;">No statistics available.</p>`;
+                clientsListContainer.innerHTML = `<p style="color: #ff4444; text-align: center;">No player list available.</p>`;
+                return;
+            }
+
+            try {
+                // Fetch server stats
+                const statsResponse = await fetch(`https://api.status.tw/server/${serverData.ip}/${serverData.port}/stats`);
+                if (!statsResponse.ok) {
+                    throw new Error('Could not fetch server statistics.');
+                }
+                const statsData = await statsResponse.json();
+
+                // Display server info
+                title.textContent = serverData.name;
+                subtitle.textContent = `${serverData.gameType ? serverData.gameType.name : 'N/A'} • ${serverData.map ? serverData.map.name : 'N/A'} • ${serverData.numPlayers}/${serverData.maxPlayers} Players`;
+
+                infoContainer.innerHTML = `
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">IP:</span>
+                        <span class="large-stat-value">${serverData.ip}:${serverData.port}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Players:</span>
+                        <span class="large-stat-value">${serverData.numPlayers}/${serverData.maxPlayers}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Clients:</span>
+                        <span class="large-stat-value">${serverData.numClients}/${serverData.maxClients}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Map:</span>
+                        <span class="large-stat-value">${serverData.map ? serverData.map.name : 'N/A'}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Game Type:</span>
+                        <span class="large-stat-value">${serverData.gameType ? serverData.gameType.name : 'N/A'}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Version:</span>
+                        <span class="large-stat-value">${serverData.version ? serverData.version.version : 'N/A'}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Password Protected:</span>
+                        <span class="large-stat-value">${serverData.hasPassword ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Website:</span>
+                        <span class="large-stat-value">${serverData.website ? `<a href="${serverData.website}" target="_blank">${serverData.website}</a>` : 'N/A'}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Discord:</span>
+                        <span class="large-stat-value">${serverData.discordInvite ? `<a href="${serverData.discordInvite}" target="_blank">Join Discord</a>` : 'N/A'}</span>
+                    </div>
+                    <div class="large-stat-item" style="flex-direction: column; align-items: flex-start;">
+                        <span class="large-stat-label" style="margin-bottom: 5px;">Description:</span>
+                        <span class="large-stat-value" style="word-break: break-word;">${serverData.description || 'N/A'}</span>
+                    </div>
+                `;
+
+                // Display server statistics (Uptime and Avg Play Time)
+                statsContainer.innerHTML = `
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Avg Play Time:</span>
+                        <span class="large-stat-value">${formatTime(statsData.avgPlayTime)}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Uptime Percentage:</span>
+                        <span class="large-stat-value">${(statsData.uptime.uptimePercentage * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Total Uptime:</span>
+                        <span class="large-stat-value">${formatTime(statsData.uptime.uptime)}</span>
+                    </div>
+                    <div class="large-stat-item">
+                        <span class="large-stat-label">Total Downtime:</span>
+                        <span class="large-stat-value">${formatTime(statsData.uptime.downtime)}</span>
+                    </div>
+                    <h4 style="margin-top: 15px; text-align: center; color: var(--primary-color);">Player Activity Over Time</h4>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'day')">Day</button>
+                        <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'week')">Week</button>
+                        <button class="filter-select" onclick="updateChart(currentServerIp, currentServerPort, 'month')">Month</button>
+                    </div>
+                    <div class="chart-container" style="height: 300px; margin-bottom: 20px;">
+                        <canvas id="playerPeakChart"></canvas>
+                    </div>
+                `;
+                
+                // Fetch and display initial day chart data
+                await updateChart(currentServerIp, currentServerPort, 'day');
+
+
+                // Display client list
+                let clientsHtml = '';
+                const teams = {};
+                serverData.clients.forEach(client => {
+                    const teamKey = client.team === -1 ? 'Spectators' : `Team ${client.team}`;
+                    if (!teams[teamKey]) {
+                        teams[teamKey] = [];
+                    }
+                    teams[teamKey].push(client);
+                });
+
+                if (serverData.clients && serverData.clients.length > 0) {
+                    for (const teamKey in teams) {
+                        const sortedClients = [...teams[teamKey]].sort((a, b) => {
+                            if (a.score === -9999 && b.score === -9999) return 0;
+                            if (a.score === -9999) return 1;
+                            if (b.score === -9999) return -1;
+                            return b.score - a.score; // Sort by score descending
+                        });
+
+                        clientsHtml += `<h5 style="color: var(--primary-color); margin-top: 15px; margin-bottom: 5px; text-align: center;">${teamKey} (${teams[teamKey].length} players)</h5>`;
+                        clientsHtml += `
+                            <table class="server-client-list-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Score</th>
+                                        <th>Country</th>
+                                        <th>Clan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        sortedClients.forEach(client => {
+                            // Display AFK indicator if client.afk is true
+                            const afkIndicator = client.afk ? '<span style="color: grey; font-size: 0.8em; margin-right: 5px;" title="AFK">😴</span>' : '';
+                            const playerNameLink = `<a href="players.html?player=${encodeURIComponent(client.name)}" onclick="event.stopPropagation();" style="color: inherit; text-decoration: underline;">${afkIndicator}${client.name}</a>`;
+                            const clanNameLink = client.clan ? `<a href="clans.html?clan=${encodeURIComponent(client.clan.name)}" onclick="event.stopPropagation();" style="color: inherit; text-decoration: underline;">${client.clan.name}</a>` : 'N/A';
+
+                            clientsHtml += `
+                                <tr>
+                                    <td>${playerNameLink}</td>
+                                    <td>${client.score === -9999 ? 'N/A' : client.score}</td>
+                                    <td><img src="${client.country.iconUrl}" onerror="this.onerror=null;this.src='https://cdn.status.tw/flags/default.png';" title="${client.country.identifier}"> ${client.country.identifier === 'default' ? 'Default' : client.country.identifier}</td>
+                                    <td>${clanNameLink}</td>
+                                </tr>
+                            `;
+                        });
+                        clientsHtml += `
+                                </tbody>
+                            </table>
+                        `;
+                    }
+                } else {
+                    clientsHtml += `<p style="text-align: center; color: rgba(255, 255, 255, 0.7);">No clients currently on this server.</p>`;
+                }
+                
+                // Defensive check to prevent "container is null" error
+                if (clientsListContainer) {
+                    clientsListContainer.innerHTML = clientsHtml;
+                } else {
+                    console.error("Error: serverClientsListContainer element not found.");
+                }
+
+            } catch (error) {
+                console.error('Error fetching server details or stats:', error);
+                infoContainer.innerHTML = `
+                    <p style="text-align: center; color: #ff4444; padding: 20px;">
+                        Failed to load server details. ${error.message}
+                    </p>
+                `;
+                statsContainer.innerHTML = `
+                    <p style="text-align: center; color: #ff4444; padding: 20px;">
+                        Failed to load server statistics. ${error.message}
+                    </p>
+                `;
+                if (clientsListContainer) {
+                    clientsListContainer.innerHTML = `
+                        <p style="text-align: center; color: #ff4444; padding: 20px;">
+                            Failed to load player list. ${error.message}
+                        </p>
+                    `;
+                } else {
+                     console.error("Error: serverClientsListContainer element not found during error handling.");
+                }
+            }
+        }
+
+        // Function to render the player activity chart (line graph)
+        function renderPlayerActivityChart(chartData, range) {
+            const ctx = document.getElementById('playerPeakChart').getContext('2d');
+
+            if (playerActivityChart) {
+                playerActivityChart.destroy(); // Destroy previous chart instance
+            }
+
+            const labels = [];
+            const maxPlayersData = []; 
+
+            let chartLabels;
+            let chartMaxDataPoints;
+
+            if (range === 'day') {
+                // For 'day' range, use actual hourly timestamps for labels and data directly
+                chartData.forEach(item => {
+                    const date = new Date(item.timestamp);
+                    labels.push(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Hourly for day
+                    maxPlayersData.push(item.maxPlayers);
+                });
+                chartLabels = labels;
+                chartMaxDataPoints = maxPlayersData;
+
+            } else { // For 'week' and 'month' ranges
+                chartData.forEach(item => {
+                    const date = new Date(item.timestamp);
+                    if (range === 'week') {
+                        labels.push(date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }));
+                    } else if (range === 'month') {
+                        labels.push(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
+                    }
+                    maxPlayersData.push(item.maxPlayers);
+                });
+                chartLabels = labels;
+                chartMaxDataPoints = maxPlayersData;
+            }
+
+
+            playerActivityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [
+                        {
+                            label: 'Players', // Renamed from 'Max Players'
+                            data: chartMaxDataPoints,
+                            borderColor: 'rgba(0, 123, 255, 0.8)', // Blue color
+                            backgroundColor: 'rgba(0, 123, 255, 0.2)', // Filled area color
+                            fill: true, // Chart is filled
+                            tension: 0.3, // Smoothness
+                            pointRadius: 3, // Display dots
+                            pointHoverRadius: 5 // Display dots on hover
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'var(--text-color)'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return `Time: ${context[0].label}`;
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(0);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'var(--text-color)',
+                                maxRotation: 45,
+                                minRotation: 0,
+                                autoSkip: true,
+                                autoSkipPadding: 10,
+                                // For 'day' range, only show ticks at full hours for cleaner look
+                                callback: function(value, index, ticks) {
+                                    if (range === 'day') {
+                                        // Get the full hour from the label string (e.g., "14:00" -> "14")
+                                        const hourMinute = this.getLabelForValue(value);
+                                        const minutes = parseInt(hourMinute.split(':')[1]);
+                                        if (minutes !== 0) { // Only show labels for full hours (e.g., 00:00, 01:00)
+                                            return null;
+                                        }
+                                    }
+                                    return this.getLabelForValue(value);
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'var(--text-color)',
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Removed renderApexHeatmap function entirely
+
+        // Function to handle chart range changes
+        async function updateChart(ip, port, range) { // Renamed from updateChartAndHeatmap
+            let chartData = [];
+            const chartCanvas = document.getElementById('playerPeakChart');
+
+            // Show loading state for chart area
+            if (chartCanvas) {
+                const ctx = chartCanvas.getContext('2d');
+                ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+                ctx.font = '20px SF Pro Rounded';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.textAlign = 'center';
+                ctx.fillText('Loading chart data...', chartCanvas.width / 2, chartCanvas.height / 2);
+            }
+
+            try {
+                const response = await fetch(`https://api.status.tw/server/${ip}/${port}/chart/${range}`);
+                if (!response.ok) throw new Error(`Could not fetch ${range} chart data.`);
+                chartData = await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${range} chart data:`, error);
+                // Display error in chart area
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+                    ctx.font = '16px SF Pro Rounded';
+                    ctx.fillStyle = '#ff4444';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`Failed to load ${range} chart data: ${error.message}`, chartCanvas.width / 2, chartCanvas.height / 2);
+                }
+                return;
+            }
+
+            renderPlayerActivityChart(chartData, range);
+        }
+
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Only load servers initially; checkUrlParams is now called inside loadServers.
+            loadServers(); 
+            document.getElementById('serverSearch').addEventListener('input', filterAndSortServers);
+            document.getElementById('gameTypeFilter').addEventListener('change', filterAndSortServers);
+            document.getElementById('sortBy').addEventListener('change', filterAndSortServers);
+            document.getElementById('showMoreServersBtn').addEventListener('click', loadMoreServers);
+        });
+    </script>
+</body>
+</html>
