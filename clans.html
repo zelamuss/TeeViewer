@@ -347,12 +347,12 @@
 </head>
 <body>
     <div class="topbar">
-        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="DDNet Logo">
+        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
         <div class="nav-buttons">
             <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
-            <button onclick="navigateToPage('clans.html')" class="categories" id="clans">Clans</button>
-            <button onclick="navigateToPage('maps.html')" class="categories" id="maps">Maps</button>
-            <button onclick="navigateToPage('servers.html')" class="categories" id="servers">Servers</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
             <button onclick="navigateToPage('status.html')" class="categories" id="status">Status</button>
         </div>
     </div>
@@ -579,7 +579,7 @@ const countryName = COUNTRY_CODES[player.country?.code] || player.country?.code;
                 
 
                 return `
-                    <div class="player-card" onclick="copyToClipboard('${player.name}')">
+                    <div class="player-card" onclick="navigateToPage('players.html?player=${encodeURIComponent(player.name)}')" style="cursor: pointer;">${player.name}>
                         <div class="player-header">
                             <span class="player-name">${player.name}</span>
                             ${player.country?.iconUrl ? `<img src="${player.country.iconUrl}" alt="${player.country.code}" class="country-flag">` : ''}
