@@ -279,8 +279,6 @@
                     
                     <li><strong>Country:</strong> <span id="country">Loading...</span></li>
                     <li><strong>City:</strong> <span id="city">Loading...</span></li>
-                    <li><strong>Region:</strong> <span id="region">Loading...</span></li>
-                    <li><strong>Organization:</strong> <span id="org">Loading...</span></li>
                 </ul>
             </div>
 
@@ -396,8 +394,7 @@
                     const data = await response.json();
                     document.getElementById('country').textContent = data.country_name || 'N/A';
                     document.getElementById('city').textContent = data.city || 'N/A';
-                    document.getElementById('region').textContent = data.region || 'N/A';
-                    document.getElementById('org').textContent = data.org || 'N/A';
+
                 } catch (error) {
                     console.error('Error fetching region data:', error);
                     document.getElementById('region-data').innerHTML = '<li><strong>Error:</strong> Could not fetch region data.</li>';
@@ -781,7 +778,7 @@
                 for (const api of apiEndpoints) {
                     try {
                         const response = await fetch(api.url);
-                        document.getElementById(api.id).textContent = `Status: ${response.status} (${response.statusText})`;
+                        document.getElementById(api.id).textContent = `Status: ${response.status}`;
                         if (response.ok) {
                             document.getElementById(api.id).style.color = 'lightgreen';
                         } else {
