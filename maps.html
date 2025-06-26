@@ -709,16 +709,15 @@
         </style>
     </head>
     <body>
-    <div class="topbar">
-        <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="DDNet Logo">
-        <div class="nav-buttons">
+        <div class="topbar">
+            <img onclick="navigateToPage('index.html')" class="logo" src="logo.png" alt="TeeViewer Logo">
+            <div class="nav-buttons">
             <button onclick="navigateToPage('players.html')" class="categories" id="players">Players</button>
-            <button onclick="navigateToPage('clans.html')" class="categories" id="clans">Clans</button>
-            <button onclick="navigateToPage('maps.html')" class="categories" id="maps">Maps</button>
-            <button onclick="navigateToPage('servers.html')" class="categories" id="servers">Servers</button>
-            <button onclick="navigateToPage('status.html')" class="categories" id="status">Status</button>
+            <button onclick="navigateToPage('clans.html')"class="categories" id="clans">Clans</button>
+            <button onclick="navigateToPage('maps.html')"class="categories" id="maps">Maps</button>
+            <button onclick="navigateToPage('servers.html')"class="categories" id="servers">Servers</button>
+            </div>
         </div>
-    </div>
 
         <!-- Main Maps Browser -->
         <div class="maps-container" id="mapsBrowser">
@@ -1093,7 +1092,6 @@
 
                     const typeClass = getTypeClass(mapData.server);
                     const starsHtml = '★'.repeat(mapData.stars || 0) + '☆'.repeat(5 - (mapData.stars || 0));
-
                     row.innerHTML = `
                         <td>${mapData.map}</td>
                         <td><span class="type-badge ${typeClass}">${mapData.server}</span></td>
@@ -1422,7 +1420,7 @@
                         const row = rankingsTableBody.insertRow();
                         row.innerHTML = `
                             <td>${rank.rank}</td>
-                            <td>${rank.name}</td>
+                            <td onclick="navigateToPage('players.html?player=${encodeURIComponent(rank.name)}')" style="text-decoration: underline; cursor: pointer;">${rank.name}</td>
                             <td>${formatTimeDetailed(rank.time)}</td>
                             <td>${diffFromRank1}</td>
                             <td>${formatDate(rank.timestamp)}</td>
@@ -1448,7 +1446,7 @@
                         const row = playtimeTableBody.insertRow();
                         row.innerHTML = `
                             <td>${index + 1}</td>
-                            <td>${player.name}</td>
+                            <td onclick="navigateToPage('players.html?player=${encodeURIComponent(player.name)}')" style="text-decoration: underline; cursor: pointer;">${player.name}</td>
                             <td>${formatTime(player.seconds_played)}</td>
                         `;
                     });
