@@ -1156,13 +1156,15 @@
             let playerData = null;
 
             try {
+                console.log(`Fetching player data for: ${playerName} from ${apiUrl}`);
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     if (response.status === 404) {
-                        showCustomModal(`Player "${playerName}" not found. Please check the spelling.`);
+                        throw new Error(`Player '${playerName}' not found. Please check the spelling.`);
                     } else {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`HTTP error! status: ${response.status} for ${apiUrl}`);
                     }
+                    // Ensure elements are cleared on error
                     document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">Player data not found or error fetching.</td></tr>';
                     document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">Player data not found or error fetching.</td></tr>';
                     document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
@@ -1170,16 +1172,19 @@
                     return;
                 }
                 playerData = await response.json();
+                console.log('Player data fetched successfully:', playerData);
             } catch (error) {
                 console.error('Error fetching player data:', error);
                 document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">Error loading player data.</td></tr>';
                 document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">Error loading player data.</td></tr>';
                 document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
                 
+                showCustomModal(error.message || "Failed to fetch player data. Please try again."); // Show specific error to user
                 return;
             }
 
             if (!playerData || !playerData.recent_top_10s) {
+                console.warn('No recent top 10s data found in player data.', playerData);
                 document.getElementById('recentTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6">No recent top 10s available for this player.</td></tr>';
                 document.getElementById('rankDistributionTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2">No rank distribution data available.</td></tr>';
                 document.getElementById('allTop10sTable').getElementsByTagName('tbody')[0].innerHTML = '';
@@ -1197,7 +1202,7 @@
             if (recentTop10s && recentTop10s.length > 0) {
                 // Display up to 10 recent top 10s in this section initially
                 recentTop10s.slice(0, 10).forEach(item => {
-                    const row = recentTop10sTbody.insertRow();
+                    const row = recentTop10sTbody.insertCell();
                     row.insertCell().textContent = item.rank_type;
                     row.insertCell().textContent = item.map;
                     row.insertCell().textContent = item.rank;
@@ -1223,7 +1228,7 @@
                 // Display counts for ranks 1-10 in table rows
                 for (let i = 1; i <= 10; i++) {
                     const count = rankCounts[i] || 0;
-                    const row = rankDistributionTableBody.insertRow();
+                    const row = rankDistributionTableBody.insertCell();
                     row.insertCell().textContent = getOrdinalSuffix(i) ;
                     row.insertCell().textContent = count;
                 }
@@ -1242,7 +1247,7 @@
                 if (allTop10sData && allTop10sData.length > 0) {
                     for (let i = 0; i < Math.min(displayedTop10s, allTop10sData.length); i++) {
                         const item = allTop10sData[i];
-                        const row = allTop10sTbody.insertRow();
+                        const row = allTop10sTbody.insertCell();
                         row.insertCell().textContent = item.map.map;
                         row.insertCell().textContent = item.rank;
                         row.insertCell().textContent = formatTime(item.time);
@@ -1259,7 +1264,6 @@
 
             // Re-attach event listener to avoid duplicates if function is called multiple times
             
-
 
             displayAllTop10s(); // Initial display for All Top 10s
         }
@@ -1481,7 +1485,7 @@
 
                     const percentage = category.maps_total > 0 ? ((category.maps_finished / category.maps_total) * 100).toFixed(1) : 0;
                     
-                    const row = completionProgressTableBody.insertRow();
+                    const row = completionProgressTableBody.insertCell();
                     row.insertCell().textContent = category.category;
                     
                     const progressCell = row.insertCell();
@@ -1500,7 +1504,7 @@
                 document.getElementById('totalProgressBar').style.width = `${totalPercentage}%`;
                 document.getElementById('totalProgressBar').textContent = `${totalPercentage}%`;
             } else {
-                const row = completionProgressTableBody.insertRow();
+                const row = completionProgressTableBody.insertCell();
                 const cell = row.insertCell();
                 cell.colSpan = 4;
                 cell.textContent = "No completion progress data found.";
@@ -1577,24 +1581,27 @@
             document.getElementById('playerAvatar').innerHTML = '';
 
             try {
+                console.log(`Attempting to fetch data for player: ${playerName}`);
                 const response = await fetch(`https://ddstats.tw/player/json?player=${encodeURIComponent(playerName)}`);
                 if (!response.ok) {
+                    const errorText = await response.text();
                     if (response.status === 404) {
-                        throw new Error(`Player '${playerName}' not found.`);
+                        throw new Error(`Player '${playerName}' not found. Please check the spelling. (Status: 404)`);
                     }
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Failed to fetch player data: HTTP status ${response.status}. Response: ${errorText}`);
                 }
                 const playerData = await response.json();
+                console.log('Successfully fetched player data:', playerData);
 
                 if (Object.keys(playerData).length === 0 || !playerData.profile) {
-                    throw new Error(`No detailed data available for player '${playerName}'.`);
+                    throw new Error(`No detailed data or profile found for player '${playerName}'.`);
                 }
 
                 displayPlayerData(playerData);
                 loadTopRanksForPlayer(playerName); // Call this to load recent top 10s and rank distribution
             } catch (error) {
-                console.error("Error fetching player data:", error);
-                displayError(error.message || "Failed to fetch player data. Please try again.");
+                console.error("Error in searchPlayer:", error);
+                displayError(error.message || "An unknown error occurred while fetching player data. Please try again.");
             } finally {
                 loadingIndicator.style.display = 'none';
             }
@@ -1605,36 +1612,36 @@
         }
 
         function displayPlayerData(playerData) {
+            console.log("Displaying player data. Full data object:", playerData);
+
+            // Safely access profile data, considering recent_player_info might be an array
             const profile = playerData.recent_player_info && playerData.recent_player_info.length > 0 ? playerData.recent_player_info[0] : playerData.profile;
+            if (!profile) {
+                console.error("Profile data is missing or malformed:", playerData);
+                displayError("Player profile data is incomplete or missing. Cannot display all details.");
+                return;
+            }
             
-            const data = playerData;
-            console.log(data)
-            console.log(profile)
+            console.log("Resolved player profile:", profile);
+
             const skinbodyColor = profile.skin_color_body;
-
             const skinfeetColor = profile.skin_color_feet;
-
             const skinName = profile.skin_name || 'default';
 
             const effectiveBodyColor = skinbodyColor !== null ? skinbodyColor.toString() : '';
-
             const effectiveFeetColor = skinfeetColor !== null ? skinfeetColor.toString() : '';
+
             renderPieCharts(playerData);
             renderCompletionProgress(playerData);
+            
             let myTee;
-            console.log(effectiveBodyColor);
-
-            if (typeof myTee !== 'undefined' && myTee !== null) {
-
-                myTee.api.functions.unbindContainer();
-
-                myTee = null;
-
-                document.querySelector('.teeassembler-tee').innerHTML = '';
-
+            const teecontainer = document.querySelector('.teeassembler-tee');
+            if (teecontainer) { // Ensure the container exists before attempting to clear/re-create
+                teecontainer.innerHTML = '';
+            } else {
+                console.error("TeeAssembler container not found.");
             }
-            const teecontainer = document.querySelector('.teeassembler-tee')
-            teecontainer.innerHTML = '';
+            
             let test;
             if (skinbodyColor === null || skinfeetColor === null) {
                 test = `player_skin ${skinName}; player_use_custom_color 0`;
@@ -1642,42 +1649,29 @@
                 test = `player_skin ${skinName}; player_color_body ${effectiveBodyColor}; player_color_feet ${effectiveFeetColor}; player_use_custom_color 1`;
             }
             currentTeeAssemblerString = test;
-            console.log(test);
+            console.log("Tee Assembler String:", test);
+
             const myTeeOptions = {
-
                 container: teecontainer,
-
                 imageLink: `https://ddstats.tw/skins/${skinName}.png`,
-
                 bodyColor: effectiveBodyColor,
-
                 feetColor: effectiveFeetColor,
-
                 colorFormat: 'code'
-
             };
             
-            
             if (typeof TeeAssembler !== 'undefined' && TeeAssembler.Tee) {
-
                 if (myTee) {
-
                     myTee.api.functions.unbindContainer();
-
                 }
-
                 myTee = new TeeAssembler.Tee(myTeeOptions);
-
                 myTee.api.functions.lookAtCursor();
-
+                console.log("TeeAssembler instance created and looking at cursor.");
             } else {
-
-                console.warn("TeeAssembler library not loaded or not found.");
-
-                document.querySelector('.teeassembler-tee').innerHTML = 'Tee preview not available.';
-
+                console.warn("TeeAssembler library not loaded or not found. Tee preview not available.");
+                if (teecontainer) {
+                    teecontainer.innerHTML = 'Tee preview not available.';
+                }
             }
-            
             
             document.getElementById('playerName').textContent = profile.name || 'N/A';
             document.getElementById('playerPoints').textContent = playerData.profile.points || 0;
@@ -1694,11 +1688,9 @@
             const countryCode = profile.country !== undefined && profile.country !== null ? profile.country.toString() : "-1";
             const countryName = COUNTRY_CODES[countryCode] || `Unknown (Code: ${countryCode})`;
             const countryFlag = document.getElementById('countryFlag');
-                const regionNames = new Intl.DisplayNames(
-
+            const regionNames = new Intl.DisplayNames(
                 ['en'], {type: 'region'}
-
-                );
+            );
             
             document.getElementById('playerCountry').textContent = countryName === "default" ? "Default" : regionNames.of(countryName);
 
@@ -1711,8 +1703,8 @@
             }
 
             document.getElementById('playerSkinName').textContent = profile.skin_name || 'N/A';
-            document.getElementById('playerBodyColor').textContent = profile.skin_color_body
-            document.getElementById('playerFeetColor').textContent = profile.skin_color_feet
+            document.getElementById('playerBodyColor').textContent = profile.skin_color_body;
+            document.getElementById('playerFeetColor').textContent = profile.skin_color_feet;
 
             document.getElementById('isMapper').textContent = playerData.is_mapper ? 'Yes' : 'No';
 
@@ -1739,7 +1731,7 @@
                     mapPlaytime[mapKey].totalTime += (finish.seconds_played || 0);
                 });
             }
-            document.getElementById('totalSecondsPlayed').textContent = formatTime(totalSecondsPlayed);
+            document.getElementById('totalSecondsPlayed').textContent = Math.round(playerData.general_activity.total_seconds_played);
             document.getElementById('lastSeen').textContent = profile.last_seen ? new Date(profile.last_seen).toLocaleDateString() : 'N/A';
             document.getElementById('playerStartPlaytime').textContent = earliestFinishDate ? earliestFinishDate.toLocaleDateString() : 'N/A';
 
@@ -1748,7 +1740,7 @@
             const sortedMaps = Object.values(mapPlaytime).sort((a, b) => b.totalTime - a.totalTime).slice(0, 10);
             if (sortedMaps.length > 0) {
                 sortedMaps.forEach(map => {
-                    const row = mostPlayedMapsTableBody.insertRow();
+                    const row = mostPlayedMapsTableBody.insertCell();
                     const mapCell = row.insertCell();
                     row.insertCell().textContent = map.serverName;
                     row.insertCell().textContent = formatTime(map.totalTime);
@@ -1762,7 +1754,7 @@
                     mapCell.appendChild(mapLink);
                 });
             } else {
-                const row = mostPlayedMapsTableBody.insertRow();
+                const row = mostPlayedMapsTableBody.insertCell();
                 const cell = row.insertCell();
                 cell.colSpan = 3;
                 cell.textContent = "No played maps data found.";
@@ -1775,7 +1767,7 @@
             recentFinishesTableBody.innerHTML = '';
             if (playerData.recent_finishes && playerData.recent_finishes.length > 0) {
                 playerData.recent_finishes.forEach(finish => {
-                    const row = recentFinishesTableBody.insertRow();
+                    const row = recentFinishesTableBody.insertCell();
                     const mapCell = row.insertCell();
                     row.insertCell().textContent = finish.server;
                     row.insertCell().textContent = finish.time ? formatTime(finish.time.toFixed(2)): 'N/A';
@@ -1792,7 +1784,7 @@
                     mapCell.appendChild(mapLink);
                 });
             } else {
-                const row = recentFinishesTableBody.insertRow();
+                const row = recentFinishesTableBody.insertCell();
                 const cell = row.insertCell();
                 cell.colSpan = 6;
                 cell.textContent = "No recent finishes found.";
@@ -1804,12 +1796,12 @@
             favouriteTeammatesTableBody.innerHTML = '';
             if (playerData.favourite_teammates && playerData.favourite_teammates.length > 0) {
                 playerData.favourite_teammates.forEach(teammate => {
-                    const row = favouriteTeammatesTableBody.insertRow();
+                    const row = favouriteTeammatesTableBody.insertCell();
                     row.insertCell().textContent = teammate.name || 'N/A';
                     row.insertCell().textContent = teammate.ranks_together || 0;
                 });
             } else {
-                const row = favouriteTeammatesTableBody.insertRow();
+                const row = favouriteTeammatesTableBody.insertCell();
                 const cell = row.insertCell();
                 cell.colSpan = 2;
                 cell.textContent = "No favourite teammates found.";
@@ -1824,6 +1816,7 @@
             if (playerData.playtime_per_month && playerData.playtime_per_month.length > 0) {
                 const playtimeLabels = playerData.playtime_per_month.map(item => item.month);
                 const playtimeData = playerData.playtime_per_month.map(item => Math.round(item.seconds_played / 3600));
+                console.log("Playtime Chart Data:", { labels: playtimeLabels, data: playtimeData });
 
                 playtimeChartInstance = new Chart(playtimeCtx, {
                     type: 'line',
@@ -1882,20 +1875,24 @@
                                     color: 'white'
                                 }
                             },
-                             tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false, // This is the key setting
+                                    callbacks: {
+                                        title: function(context) {
+                                            return `Time: ${context[0].label}`;
+                                        },
+                                        label: function(context) {
+                                            return `Activity: ${context.raw.toLocaleString()}`;
                                         }
-                                        if (context.parsed.y !== null) {
-                                            label += context.parsed.y + 'h';
-                                        }
-                                        return label;
+                                    },
+                                    bodyFont: {
+                                        family: 'SF Pro Rounded, sans-serif'
+                                    },
+                                    titleFont: {
+                                        family: 'SF Pro Rounded, sans-serif'
                                     }
                                 }
-                            }
                         }
                     }
                 });
@@ -1905,6 +1902,7 @@
                 playtimeCtx.fillStyle = 'white';
                 playtimeCtx.textAlign = 'center';
                 playtimeCtx.fillText('No playtime data available.', playtimeCtx.canvas.width / 2, playtimeCtx.canvas.height / 2);
+                console.warn('No playtime data available for chart.');
             }
 
             const pointsCtx = document.getElementById('pointsChart').getContext('2d');
@@ -1912,18 +1910,14 @@
                 pointsChartInstance.destroy();
             }
             if (playerData.points_graph && playerData.points_graph.length > 0) {
-                const filteredPointsGraph = [];
-                if (playerData.points_graph.length > 0) {
-                    filteredPointsGraph.push(playerData.points_graph[0]);
-                    for (let i = 1; i < playerData.points_graph.length; i++) {
-                        if (playerData.points_graph[i].points !== playerData.points_graph[i - 1].points) {
-                            filteredPointsGraph.push(playerData.points_graph[i]);
-                        }
-                    }
-                }
+                // Temporarily disable filtering for debugging tooltip
+                const rawPointsGraph = playerData.points_graph; // Use raw data
+                console.log("Raw Points Graph Data (for debugging):", rawPointsGraph);
 
-                const pointsLabels = filteredPointsGraph.map(item => item.date);
-                const pointsData = filteredPointsGraph.map(item => item.points);
+                const pointsLabels = rawPointsGraph.map(item => item.date);
+                const pointsData = rawPointsGraph.map(item => item.points);
+                console.log("Points Chart Data:", { labels: pointsLabels, data: pointsData });
+
 
                 pointsChartInstance = new Chart(pointsCtx, {
                     type: 'line',
@@ -1956,6 +1950,7 @@
                                     color: 'rgba(255, 255, 255, 0.2)'
                                 }
                             },
+
                             x: {
                                 title: {
                                     display: true,
@@ -1972,6 +1967,24 @@
                                 }
                             }
                         },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false, // Apply the key setting here
+                                    callbacks: {
+                                        title: function(context) {
+                                            return `Date: ${context[0].label}`;
+                                        },
+                                        label: function(context) {
+                                            return `Points: ${context.raw.toLocaleString()}`;
+                                        }
+                                    },
+                                    bodyFont: {
+                                        family: 'SF Pro Rounded, sans-serif'
+                                    },
+                                    titleFont: {
+                                        family: 'SF Pro Rounded, sans-serif'
+                                    }
+                                },
                         plugins: {
                             legend: {
                                 labels: {
@@ -1987,6 +2000,7 @@
                 pointsCtx.fillStyle = 'white';
                 pointsCtx.textAlign = 'center';
                 pointsCtx.fillText('No points data available.', pointsCtx.canvas.width / 2, pointsCtx.canvas.height / 2);
+                console.warn('No points data available for chart.');
             }
 
             playerStatsContainer.style.display = 'block';
