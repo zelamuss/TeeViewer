@@ -2188,7 +2188,7 @@
                 <p>Clan: <span>${profile.recent_player_info[0].clan || 'N/A'}</span></p>
                 <p class="country-display">Country: <span>${countryName}</span></p>
                 <p>Total Finishes: <span>${playerData.finishes ? playerData.finishes.length : 0}</span></p>
-                <p>Total Time Played: <span>${formatTime(totalSecondsPlayed)}</span></p>
+                <p>Total Time Played: <span>${formatTime(playerData.general_activity.total_seconds_played)}</span></p>
                 <p>Is Mapper: <span>${playerData.is_mapper ? 'Yes' : 'No'}</span></p>
             `;
             return card;
