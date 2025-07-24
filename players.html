@@ -1739,7 +1739,7 @@
                     mapPlaytime[mapKey].totalTime += (finish.seconds_played || 0);
                 });
             }
-            document.getElementById('totalSecondsPlayed').textContent = formatTime(totalSecondsPlayed);
+            document.getElementById('totalSecondsPlayed').textContent = formatTime(playerData.general_activity.total_seconds_played);
             document.getElementById('lastSeen').textContent = profile.last_seen ? new Date(profile.last_seen).toLocaleDateString() : 'N/A';
             document.getElementById('playerStartPlaytime').textContent = earliestFinishDate ? earliestFinishDate.toLocaleDateString() : 'N/A';
 
