@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teeworlds Skin Renderer</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 50px; }
+        #renderedImage { border: 1px solid #ccc; margin-top: 20px; max-width: 500px; height: auto; }
+        canvas { display: none; /* Hide the canvas if you're rendering to an img tag */ }
+    </style>
+    <script src="js/TeeAssembler.js"></script>
+    <script src="js/color.js"></script>
+</head>
+<body>
+    <h1>Dynamic Teeworlds Skin</h1>
+    <img id="renderedImage" alt="Rendered Teeworlds Skin">
+    <canvas id="teeCanvas" width="256" height="128"></canvas> <script>
+        // Default values
+        const DEFAULT_SKIN_NAME = "default";
+        const DEFAULT_BODY_COLOR_CODE = 5288960; // Example: greenish blue
+        const DEFAULT_FEET_COLOR_CODE = 255;    // Example: bright red
+        const SKINS_BASE_URL = "https://ddnet.org/skins/skin/";
+
+        async function renderSkinFromUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const skinname = urlParams.get('skinname') || DEFAULT_SKIN_NAME;
+            const colorBodyParam = urlParams.get('color_body');
+            const colorFeetParam = urlParams.get('color_feet');
+
+            // Use default if not specified or invalid
+            const colorBody = colorBodyParam ? parseInt(colorBodyParam, 10) : DEFAULT_BODY_COLOR_CODE;
+            const colorFeet = colorFeetParam ? parseInt(colorFeetParam, 10) : DEFAULT_FEET_COLOR_CODE;
+
+            const imageLink = `${SKINS_BASE_URL}${skinname}.png`;
+
+            const canvas = document.getElementById('teeCanvas');
+            const ctx = canvas.getContext('2d');
+            const imgElement = document.getElementById('renderedImage');
+
+            try {
+                // Initialize TeeAssembler.Tee
+                // We're not using a 'container' here as we'll draw to our own canvas/img
+                const myTee = new TeeAssembler.Tee({
+                    imageLink: imageLink,
+                    bodyColor: colorBody, // Pass initial colors for the Tee object
+                    feetColor: colorFeet,
+                    colorFormat: 'code'
+                });
+
+                // Get the image as a Blob URL using TeeAssembler's internal function
+                // It's important to pass the *actual* colors you want to render in getTeeImage
+                // as the initial Tee object might just set defaults.
+                const blobUrl = await myTee.api.functions.getTeeImage(
+                    colorBody.toString(), // Needs to be string for getTeeImage
+                    colorFeet.toString(), // Needs to be string for getTeeImage
+                    'code'
+                );
+
+                imgElement.src = blobUrl;
+                imgElement.style.display = 'block'; // Show the image
+                canvas.style.display = 'none';      // Hide the canvas
+                
+            } catch (error) {
+                console.error("Error rendering skin:", error);
+                imgElement.alt = "Failed to load or render skin.";
+                imgElement.style.display = 'block';
+            }
+        }
+
+        // Run the function when the page loads
+        window.addEventListener('load', renderSkinFromUrlParams);
+    </script>
+</body>
+</html>
